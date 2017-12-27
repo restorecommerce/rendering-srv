@@ -20,6 +20,7 @@
     "@restorecommerce/handlebars-helperized": "^0.1.0",
     "@restorecommerce/kafka-client": "github:restorecommerce/kafka-client",
     "@restorecommerce/logger": "^0.1.0",
+    "@restorecommerce/protos": "github:restorecommerce/protos",
     "@restorecommerce/service-config": "^0.1.0",
     "bluebird": "^3.4.6",
     "cheerio": "^1.0.0-rc.2",
