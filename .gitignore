@@ -1,0 +1,5 @@
+*.d.ts
+node_modules/
+*.js
+!setupTopics.js
+./test/*.js
