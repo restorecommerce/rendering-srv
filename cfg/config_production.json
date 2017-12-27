@@ -1,0 +1,23 @@
+{
+  "logger": {
+    "elasticsearch": {
+      "level": "silly",
+      "clientOpts": {
+        "host": "elasticsearch:9200"
+      },
+      "source": "rendering-srv"
+    }
+  },
+  "events": {
+    "kafka": {
+      "connectionString": "zookeeper:2181"
+    }
+  },
+  "server": {
+    "transports": [
+      {
+        "addr": "rendering-srv:50051"
+      }
+    ]
+  }
+}

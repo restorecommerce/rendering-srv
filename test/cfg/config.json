@@ -1,0 +1,90 @@
+{
+  "logger": {
+    "console": {
+      "handleExceptions": false,
+      "level": "silly",
+      "colorize": true,
+      "prettyPrint": true
+    }
+  },
+  "events": {
+    "kafka": {
+      "provider": "kafka",
+      "groupId": "test-rendering-srv",
+      "clientId": "test-rendering-srv",
+      "connectionString": "localhost:2181",
+      "renderingTopic": "io.restorecommerce.rendering",
+      "renderRequest": {
+        "protos": [
+          "io/restorecommerce/rendering.proto"
+        ],
+        "protoRoot": "node_modules/restorecommerce/protos/",
+        "messageObject": "io.restorecommerce.rendering.RenderRequest"
+      },
+      "renderResponse": {
+        "protos": [
+          "io/restorecommerce/rendering.proto"
+        ],
+        "protoRoot": "node_modules/restorecommerce/protos/",
+        "messageObject": "io.restorecommerce.rendering.RenderResponse"
+      },
+      "topics": {
+        "rendering": {
+          "topic": "io.restorecommerce.rendering",
+          "events": [
+            "renderRequest"
+          ]
+        }
+      }
+    },
+    "enableEvents": true
+  },
+  "templates": {
+    "prefix": "http://localhost:8080/",
+    "root": "test/fixtures/",
+    "simple_message": {
+      "body": "test_message.hbs"
+    },
+    "message_with_layout": {
+      "body": "test_message_body.hbs",
+      "layout": "test_message_layout.hbs"
+    },
+    "message_with_style": {
+      "body": "test_message_body.hbs",
+      "layout": "test_message_layout.hbs",
+      "style": "css/test.css"
+    }
+  },
+  "static_server": {
+    "prefix":"http://localhost",
+    "port": 8088
+  },
+  "server": {
+    "services": {
+      "io-restorecommerce-rendering-cis": {
+        "check": {
+          "transport": [
+            "grpcRendering"
+          ]
+        }
+      }
+    },
+    "transports": [
+      {
+        "name": "grpcRendering",
+        "provider": "grpc",
+        "services": {
+          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service"
+        },
+        "protos": [
+          "io/restorecommerce/commandinterface.proto"
+        ],
+        "protoRoot": "node_modules/restorecommerce/protos/",
+        "addr": "localhost:50057"
+      }
+    ]
+  },
+  "serviceNames": {
+    "cis": "io-restorecommerce-rendering-cis"
+  }
+}

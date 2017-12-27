@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "start.ts", "./service.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "docs",
+	"protos/typedefs"
+  ]
+}
