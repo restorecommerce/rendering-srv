@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import * as cheerio from 'cheerio';
 import * as co from 'co';
 import * as fetch from 'node-fetch';
-
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import * as Logger from '@restorecommerce/logger';
@@ -50,6 +49,9 @@ export class Service {
     this.server = new Server(cfg.get('server'), logger);
   }
 
+  /**
+   * start the server
+   */
   async start(): Promise<any> {
     await this.subscribeTopics();
     this.commandService = new cis.CommandInterface(this.server, null,
@@ -59,11 +61,13 @@ export class Service {
     await co(this.server.start());
   }
 
+  /**
+   * subscribes to list of topics based on event names in config and
+   * upon receiving the request renders the response
+   */
   async subscribeTopics(): Promise<any> {
     this.logger.info('Subscribing Kafka topics');
-
     await this.events.start();
-
     const that = this;
     const listener = async function (msg: any, context: any, config: any, eventName: string): Promise<any> {
       const response = [];
@@ -178,7 +182,7 @@ export class Service {
     await this.topics.rendering.emit(eventName, message);
   }
 
-  async end(): Promise<any> {
+  async stop(): Promise<any> {
     await co(this.server.end());
     await this.events.stop();
   }
@@ -202,8 +206,8 @@ export class Worker {
     return this.service;
   }
 
-  async end(): Promise<any> {
-    await this.service.end();
+  async stop(): Promise<any> {
+    await this.service.stop();
   }
 }
 
@@ -216,7 +220,7 @@ if (require.main === module) {
   });
 
   process.on('SIGINT', () => {
-    worker.end().then().catch((err) => {
+    worker.stop().then().catch((err) => {
       that.logger.error('shutdown error', err);
       process.exit(1);
     });

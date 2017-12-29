@@ -1,6 +1,5 @@
 # rendering-srv
-
-[![Version npm][version]](https://npmjs.org/package/@restorecommerce/rendering-srv)[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/r/restorecommerce/rendering-srv?branch=master)
+<img src="http://img.shields.io/npm/v/%40restorecommerce%2Frendering%2Dsrv.svg?style=flat-square" alt="">(https://npmjs.org/package/@restorecommerce/rendering-srv)[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/rendering-srv?branch=master)
 
 [version]: http://img.shields.io/npm/v/rendering-srv.svg?style=flat-square
 [build]: http://img.shields.io/travis/restorecommerce/rendering-srv/master.svg?style=flat-square
@@ -42,7 +41,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Request ID |
-| payload | []Payload | required | List of templates and data |
+| payload | [ ]io.restorecommerce.rendering.Payload | required | List of templates and data |
 | service_name | string | optional | Requester label |
 
 `io.restorecommerce.rendering.Payload`
@@ -52,7 +51,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | templates | string | required | JSON mapping labels to body and layout templates |
 | data | string | required | JSON mapping content to render output |
 | style | string | optional | A URL pointing to a stylesheet |
-| strategy | Strategy | optional | Strategy to use when applying a style. Possible values are `INLINE` and `COPY`|
+| strategy | enum | optional | Strategy to use when applying a style. Possible values are `INLINE` and `COPY`|
 
 
 `io.restorecommerce.rendering.RenderResponse`
@@ -60,7 +59,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Same value as the respective `RenderRequest` id |
-| response | []Response | required | List of rendered outputs |
+| response | [ ]io.restorecommerce.rendering.Response | required | List of rendered outputs |
 
 
 `io.restorecommerce.rendering.Response`

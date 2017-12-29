@@ -80,7 +80,7 @@
           "io/restorecommerce/commandinterface.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "addr": "localhost:50057"
+        "addr": "localhost:50051"
       }
     ]
   },

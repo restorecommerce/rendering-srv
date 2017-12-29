@@ -18,7 +18,6 @@ describe('rendering srv testing', () => {
 
   let worker: Worker;
   let events: Events;
-
   let cfg: any;
   let test_cfg: any;
   let logger: any;
@@ -46,7 +45,7 @@ describe('rendering srv testing', () => {
   });
 
   after(async function stop() {
-    await worker.end();
+    await worker.stop();
   });
 
   describe('with test response listener', () => {

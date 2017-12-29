@@ -6,9 +6,7 @@
       "clientId": "rendering-srv",
       "connectionString": "localhost:2181",
       "requestEmitters": [
-        "identity",
-        "billing",
-        "roomManagement"
+        "identity"
       ],
       "renderRequest": {
         "protos": [
@@ -76,7 +74,7 @@
           "io/restorecommerce/commandinterface.proto"
         ],
         "protoRoot": "node_modules/restorecommerce/protos/",
-        "addr": "localhost:50057"
+        "addr": "localhost:50051"
       }
     ]
   },
