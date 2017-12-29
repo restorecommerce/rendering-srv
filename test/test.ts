@@ -14,6 +14,9 @@ import * as sconfig from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from './../service';
 
+/*
+ * Note: To run this test, a running kafka instance is required.
+ */
 describe('rendering srv testing', () => {
 
   let worker: Worker;
