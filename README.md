@@ -11,7 +11,7 @@ Rendering is performed using [handlebars-helperized](https://github.com/restorec
 All requests and responses are issued via [Apache Kafka](https://kafka.apache.org/) and their message structures are defined in the [rendering.proto](https://github.com/restorecommerce/protos/blob/master/io/restorecommerce/rendering.proto) file.
 This service is based on event-driven communication, using [kafka-client](https://github.com/restorecommerce/kafka-client), which binds listeners to specific Kafka events.
 
-## Kafka events
+## Kafka Events
 
 This microservice subscribes to the following Kafka events by topic:
 - io.restorecommerce.rendering
@@ -32,7 +32,7 @@ In order to do so, the `RenderRequest` message contains an optional `service_nam
 the response is pused to an event named `<serviceName>RenderResponse`. Please note that in this case the event *should be mapped in the config files*, in order to
 retrieve the respective protobuf message (see the sample config in [tests](https://github.com/restorecommerce/rendering-srv/tree/master/test) for more).
 
-### Event messages
+### Event Messages
 
 #### RenderRequest
 
@@ -51,7 +51,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | templates | string | required | JSON mapping labels to body and layout templates |
 | data | string | required | JSON mapping content to render output |
 | style | string | optional | A URL pointing to a stylesheet |
-| strategy | enum | optional | Strategy to use when applying a style. Possible values are `INLINE` and `COPY`|
+| strategy | enum | optional | Strategy to use for applying the stylesheet. Possible values are `INLINE` and `COPY`|
 
 
 `io.restorecommerce.rendering.RenderResponse`
