@@ -1,5 +1,5 @@
 # rendering-srv
-<img src="http://img.shields.io/npm/v/%40restorecommerce%2Frendering%2Dsrv.svg?style=flat-square" alt="">(https://npmjs.org/package/@restorecommerce/rendering-srv)[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/rendering-srv?branch=master)
+<img src="http://img.shields.io/npm/v/%40restorecommerce%2Frendering%2Dsrv.svg?style=flat-square" alt="">[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/rendering-srv?branch=master)
 
 [version]: http://img.shields.io/npm/v/rendering-srv.svg?style=flat-square
 [build]: http://img.shields.io/travis/restorecommerce/rendering-srv/master.svg?style=flat-square
