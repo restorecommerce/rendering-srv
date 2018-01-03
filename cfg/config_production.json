@@ -1,7 +1,7 @@
 {
   "logger": {
     "elasticsearch": {
-      "level": "silly",
+      "level": "error",
       "clientOpts": {
         "host": "elasticsearch:9200"
       },
