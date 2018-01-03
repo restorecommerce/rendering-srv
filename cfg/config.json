@@ -12,28 +12,28 @@
         "protos": [
           "io/restorecommerce/rendering.proto"
         ],
-        "protoRoot": "node_modules/restorecommerce/protos/",
+        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.rendering.RenderRequest"
       },
       "renderResponse": {
         "protos": [
           "io/restorecommerce/rendering.proto"
         ],
-        "protoRoot": "node_modules/restorecommerce/protos/",
+        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.rendering.RenderResponse"
       },
       "healthCheckCommand": {
         "protos": [
           "io/restorecommerce/commandinterface.proto"
         ],
-        "protoRoot": "node_modules/restorecommerce/protos/",
+        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.commandinterface.HealthCheckRequest"
       },
       "healthCheckResponse": {
         "protos": [
           "io/restorecommerce/commandinterface.proto"
         ],
-        "protoRoot": "node_modules/restorecommerce/protos/",
+        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.commandinterface.HealthCheckResponse"
       },
       "topics": {
@@ -73,7 +73,7 @@
         "protos": [
           "io/restorecommerce/commandinterface.proto"
         ],
-        "protoRoot": "node_modules/restorecommerce/protos/",
+        "protoRoot": "node_modules/@restorecommerce/protos/",
         "addr": "localhost:50051"
       }
     ]
