@@ -55,7 +55,7 @@
   },
   "server": {
     "services": {
-      "io-restorecommerce-rendering-cis": {
+      "io-restorecommerce-rendering-srv": {
         "check": {
           "transport": [
             "grpcRendering"
@@ -68,7 +68,7 @@
         "name": "grpcRendering",
         "provider": "grpc",
         "services": {
-          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service"
+          "io-restorecommerce-rendering-srv": "io.restorecommerce.commandinterface.Service"
         },
         "protos": [
           "io/restorecommerce/commandinterface.proto"
@@ -79,6 +79,6 @@
     ]
   },
   "serviceNames": {
-    "cis": "io-restorecommerce-rendering-cis"
+    "cis": "io-restorecommerce-rendering-srv"
   }
 }

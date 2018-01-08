@@ -113,7 +113,6 @@ export class Service {
 
             const renderResponse = { content: '' };
 
-            // renderResponse.id = id;
             const responseObj = {};
             for (let key in templates) {
               // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
@@ -146,7 +145,7 @@ export class Service {
         }
         await that.reply(id, response, serviceName);
       } else if (eventName == HEALTH_CMD_EVENT) {
-        if (msg && msg.service == that.commandService.service[msg.service]) {
+        if (msg && msg.service in that.commandService.service) {
           const serviceStatus = that.commandService.check(msg);
           await that.topics.command.emit(HEALTH_RES_EVENT, serviceStatus);
         }
