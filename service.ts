@@ -10,8 +10,7 @@ import * as Logger from '@restorecommerce/logger';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
 // gRPC / command-interface
-import { Server } from '@restorecommerce/chassis-srv';
-import * as cis from '@restorecommerce/command-interface';
+import * as chassis from '@restorecommerce/chassis-srv';
 
 const RENDER_REQ_EVENT = 'renderRequest';
 const HEALTH_CMD_EVENT = 'healthCheckCommand';
@@ -26,8 +25,8 @@ export class Service {
   cfg: any;
   events: Events;
   topics: any;
-  server: Server;
-  commandService: cis.CommandInterface;
+  server: chassis.Server;
+  commandService: chassis.CommandInterface;
   constructor(cfg: any, logger: Logger) {
     this.cfg = cfg;
     this.logger = logger;
@@ -46,7 +45,7 @@ export class Service {
     this.events = new Events(this.cfg.get('events:kafka'), this.logger);
     this.topics = {};
 
-    this.server = new Server(cfg.get('server'), logger);
+    this.server = new chassis.Server(cfg.get('server'), logger);
   }
 
   /**
@@ -54,8 +53,7 @@ export class Service {
    */
   async start(): Promise<any> {
     await this.subscribeTopics();
-    this.commandService = new cis.CommandInterface(this.server, null,
-      this.cfg.get(), this.logger);
+    this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await co(this.server.bind(serviceNamesCfg.cis, this.commandService));
     await co(this.server.start());

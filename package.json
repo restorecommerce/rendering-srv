@@ -6,7 +6,7 @@
   "author": "Invend GmbH",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.n-fuse.co/restorecommerce/rendering-srv.git"
+    "url": "https://github.com/restorecommerce/rendering-srv.git"
   },
   "license": "MIT",
   "keywords": [
@@ -16,19 +16,15 @@
   "dependencies": {
     "@restorecommerce/chassis-srv": "github:restorecommerce/chassis-srv",
     "@restorecommerce/cluster-service": "^0.1.0",
-    "@restorecommerce/command-interface": "github:restorecommerce/command-interface",
     "@restorecommerce/handlebars-helperized": "^0.1.0",
     "@restorecommerce/kafka-client": "github:restorecommerce/kafka-client",
     "@restorecommerce/logger": "^0.1.0",
     "@restorecommerce/protos": "github:restorecommerce/protos",
     "@restorecommerce/service-config": "^0.1.0",
-    "bluebird": "^3.4.6",
     "cheerio": "^1.0.0-rc.2",
     "co": "^4.6.0",
     "lodash": "^4.17.2",
-    "node-fetch": "^1.7.3",
-    "sleep": "^5.1.1",
-    "time": "^0.12.0"
+    "node-fetch": "^1.7.3"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.39",
@@ -37,7 +33,6 @@
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
-    "nock": "^9.0.13",
     "should": "^12.0.0"
   },
   "scripts": {

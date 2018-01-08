@@ -206,11 +206,9 @@ describe('rendering srv testing', () => {
       };
 
       const offset = await topic.$offset(-1) + 1;
-      console.log('Offset', offset);
       await topic.emit('renderRequest', renderRequest);
       await topic.$wait(offset);
 
-      console.log('New offset', await topic.$offset(-1));
       httpServer.close();
     });
 
