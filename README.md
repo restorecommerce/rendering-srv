@@ -68,11 +68,9 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | ----- | ---- | ----- | ----------- |
 | content | string | required | JSON mapping of template labels to rendered output |
 
-## Shared Interface
+## Chassis Service
 
-This microservice implements a shared [command-interface](https://github.com/restorecommerce/command-interface) which
-provides an endpoint for retrieving the system status. This endpoint can be called via gRPC or Kafka events (through the `io.restorecommerce.command` topic).
-For usage details please see [command-interface tests](https://github.com/restorecommerce/command-interface/tree/master/test).
+This service uses chassis-srv, a base module for restorecommerce microservices, in order to provide a command interface which exposes endpoints for retrieving the system status. These endpoints can be called via [gRPC](https://grpc.io/docs/) or Kafka events (through the io.restorecommerce.command topic).
 
 ## Usage
 
