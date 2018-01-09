@@ -28,7 +28,7 @@ List of events emitted to Kafka by this microservice for below topics:
 
 
 **Note**: the service can push responses to custom event names based on the service which is performing the request.
-In order to do so, the `RenderRequest` message contains an optional `service_name` field, which is just a label identifying a service. If that field is present,
+In order to do so, the `io.restorecommerce.RenderRequest` message contains an optional `service_name` field, which is just a label identifying a service. If that field is present,
 the response is pused to an event named `<serviceName>RenderResponse`. Please note that in this case the event *should be mapped in the config files*, in order to
 retrieve the respective protobuf message (see the sample config in [tests](https://github.com/restorecommerce/rendering-srv/tree/master/test) for more).
 
