@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "npm run createtopics && node start.js",
-    "dev": "export NODE_ENV=development; npm run createtopics && node start.js",
+    "dev": "export NODE_ENV=development; npm run createtopics && nodemon start.js",
     "pretest": "npm run tsctests && npm run createtopics",
     "test": "npm run lint && npm run mocha",
     "lint": "tslint './lib/*.ts' './test*.ts' './service.ts' './start.ts'",

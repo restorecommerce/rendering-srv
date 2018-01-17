@@ -27,14 +27,14 @@
           "io/restorecommerce/commandinterface.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "messageObject": "io.restorecommerce.commandinterface.HealthCheckRequest"
+        "messageObject": "io.restorecommerce.commandinterface.CommandRequest"
       },
       "healthCheckResponse": {
         "protos": [
           "io/restorecommerce/commandinterface.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "messageObject": "io.restorecommerce.commandinterface.HealthCheckResponse"
+        "messageObject": "io.restorecommerce.commandinterface.CommandResponse"
       },
       "topics": {
         "rendering": {
@@ -50,13 +50,12 @@
           ]
         }
       }
-    },
-    "enableEvents": true
+    }
   },
   "server": {
     "services": {
       "io-restorecommerce-rendering-srv": {
-        "check": {
+        "command": {
           "transport": [
             "grpcRendering"
           ]

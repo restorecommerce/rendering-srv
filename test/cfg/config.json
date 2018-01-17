@@ -34,10 +34,12 @@
           "events": [
             "renderRequest"
           ]
+        },
+        "command": {
+          "topic": "io.restorecommerce.command"
         }
       }
-    },
-    "enableEvents": true
+    }
   },
   "templates": {
     "prefix": "http://localhost:8080/",

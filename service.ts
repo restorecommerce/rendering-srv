@@ -26,7 +26,7 @@ export class Service {
   events: Events;
   topics: any;
   server: chassis.Server;
-  commandService: chassis.CommandInterface;
+  commandService: chassis.ICommandInterface;
   constructor(cfg: any, logger: Logger) {
     this.cfg = cfg;
     this.logger = logger;
@@ -53,7 +53,7 @@ export class Service {
    */
   async start(): Promise<any> {
     await this.subscribeTopics();
-    this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger);
+    this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger, this.events);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await co(this.server.bind(serviceNamesCfg.cis, this.commandService));
     await co(this.server.start());
@@ -144,11 +144,8 @@ export class Service {
           }
         }
         await that.reply(id, response, serviceName);
-      } else if (eventName == HEALTH_CMD_EVENT) {
-        if (msg && msg.service in that.commandService.service) {
-          const serviceStatus = that.commandService.check(msg);
-          await that.topics.command.emit(HEALTH_RES_EVENT, serviceStatus);
-        }
+      } else {  // commands
+        await that.commandService.command(msg, context);
       }
     };
 
@@ -210,15 +207,14 @@ export class Worker {
 
 if (require.main === module) {
   const worker = new Worker();
-  let that = this;
   worker.start().then().catch((err) => {
-    that.logger.error('startup error', err);
+    console.error('startup error', err);
     process.exit(1);
   });
 
   process.on('SIGINT', () => {
     worker.stop().then().catch((err) => {
-      that.logger.error('shutdown error', err);
+      console.error('shutdown error', err);
       process.exit(1);
     });
   });
