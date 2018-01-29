@@ -1,4 +1,4 @@
-FROM node:9.2.0-wheezy AS base
+FROM node:9.2.0-wheezy
 ## CREATE APP USER ##
 # Create the home directory for the new app user.
 RUN mkdir -p /home/app
@@ -27,19 +27,6 @@ RUN pwd
 USER app
 RUN npm install
 
-
-FROM node:alpine
-RUN mkdir -p /home/app
-RUN addgroup -S app &&\
-    adduser -S -g app app
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/rendering-srv
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
-RUN pwd
-# Copy files from base container by changing the ownership
-COPY --chown=app:app --from=base /home/app/rendering-srv/ .
-USER app
 EXPOSE 50051
 CMD [ "npm", "start" ]
 
