@@ -29,7 +29,6 @@
   "devDependencies": {
     "@types/mocha": "^2.2.39",
     "@types/should": "^11.2.0",
-    "co-mocha": "^1.2.1",
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^4.0.1",

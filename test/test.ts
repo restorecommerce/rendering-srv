@@ -1,13 +1,11 @@
 'use strict';
 
-import * as coMocha from 'co-mocha';
 import * as mocha from 'mocha';
-import * as Logger from '@restorecommerce/logger';
 import * as should from 'should';
 
-coMocha(mocha);
 import * as fs from 'fs';
 import * as http from 'http';
+import * as Logger from '@restorecommerce/logger';
 import * as path from 'path';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
