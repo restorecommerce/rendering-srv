@@ -16,7 +16,16 @@
   "server": {
     "transports": [
       {
-        "addr": "rendering-srv:50051"
+        "name": "grpcRendering",
+        "provider": "grpc",
+        "services": {
+          "io-restorecommerce-rendering-srv": "io.restorecommerce.commandinterface.Service"
+        },
+        "protos": [
+          "io/restorecommerce/commandinterface.proto"
+        ],
+        "protoRoot": "node_modules/@restorecommerce/protos/",
+        "addr": "rendering0srv:50051"
       }
     ]
   }
