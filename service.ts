@@ -31,17 +31,6 @@ export class Service {
     this.cfg = cfg;
     this.logger = logger;
 
-    const eventsCfg = this.cfg.get('events:kafka');
-    const renderResponseCfg = eventsCfg.renderResponse;
-    // services which emit requests
-    const requestEmitters = eventsCfg.requestEmitters;
-    if (requestEmitters) {
-      for (let service of requestEmitters) {
-        eventsCfg[`${service}RenderResponse`] = _.cloneDeep(renderResponseCfg);
-      }
-      this.cfg.set('events:kafka', eventsCfg);
-    }
-
     this.events = new Events(this.cfg.get('events:kafka'), this.logger);
     this.topics = {};
 
@@ -72,14 +61,12 @@ export class Service {
       if (eventName == RENDER_REQ_EVENT) {
         that.logger.info('Rendering request received');
         const request = msg;
-        let serviceName = '';
         const id: string = request.id;
         if (!request || request.payload.length == 0) {
           response.push('Missing payload');
         } else {
 
           const payloads = request.payload;
-          serviceName = request.service_name;
 
           for (let payload of payloads) {
             const templates = JSON.parse(payload.templates);
@@ -143,7 +130,7 @@ export class Service {
             response.push(renderResponse);
           }
         }
-        await that.reply(id, response, serviceName);
+        await that.reply(id, response);
       } else {  // commands
         await that.commandService.command(msg, context);
       }
@@ -164,16 +151,12 @@ export class Service {
 
   }
 
-  async reply(requestID: string, response: Array<string>, serviceName?: string): Promise<any> {
+  async reply(requestID: string, response: Array<string>): Promise<any> {
     const message = {
       id: requestID,
-      response: []
+      response
     };
-    message.response = response;
-
-    const eventName = serviceName ?
-      serviceName + 'RenderResponse' : 'renderResponse';
-    await this.topics.rendering.emit(eventName, message);
+    await this.topics.rendering.emit('renderResponse', message);
   }
 
   async stop(): Promise<any> {

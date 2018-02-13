@@ -5,9 +5,6 @@
       "groupId": "rendering-srv",
       "clientId": "rendering-srv",
       "connectionString": "localhost:2181",
-      "requestEmitters": [
-        "identity"
-      ],
       "renderRequest": {
         "protos": [
           "io/restorecommerce/rendering.proto"
