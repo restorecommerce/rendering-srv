@@ -22,15 +22,10 @@ This microservice subscribes to the following Kafka events by topic:
 List of events emitted to Kafka by this microservice for below topics:
 - io.restorecommerce.rendering
   - renderResponse
-  - *RenderResponse
+  - renderResponse
 - io.restorecommerce.command
   - healthCheckResponse
 
-
-**Note**: the service can push responses to custom event names based on the service which is performing the request.
-In order to do so, the `io.restorecommerce.RenderRequest` message contains an optional `service_name` field, which is just a label identifying a service. If that field is present,
-the response is pused to an event named `<serviceName>RenderResponse`. Please note that in this case the event *should be mapped in the config files*, in order to
-retrieve the respective protobuf message (see the sample config in [tests](https://github.com/restorecommerce/rendering-srv/tree/master/test) for more).
 
 ### Event Messages
 
@@ -41,7 +36,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Request ID |
-| payload | [ ]io.restorecommerce.rendering.Payload | required | List of templates and data |
+| payload | []`io.restorecommerce.rendering.Payload` | required | List of templates and data |
 | service_name | string | optional | Requester label |
 
 `io.restorecommerce.rendering.Payload`
@@ -59,7 +54,7 @@ retrieve the respective protobuf message (see the sample config in [tests](https
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Same value as the respective `RenderRequest` id |
-| response | [ ]io.restorecommerce.rendering.Response | required | List of rendered outputs |
+| response | []`io.restorecommerce.rendering.Response` | required | List of rendered outputs |
 
 
 `io.restorecommerce.rendering.Response`
