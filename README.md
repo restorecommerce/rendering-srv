@@ -36,7 +36,7 @@ List of events emitted to Kafka by this microservice for below topics:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Request ID |
-| payload | []`io.restorecommerce.rendering.Payload` | required | List of templates and data |
+| payload | [ ] `io.restorecommerce.rendering.Payload` | required | List of templates and data |
 | service_name | string | optional | Requester label |
 
 `io.restorecommerce.rendering.Payload`
@@ -54,7 +54,7 @@ List of events emitted to Kafka by this microservice for below topics:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | string | required | Same value as the respective `RenderRequest` id |
-| response | []`io.restorecommerce.rendering.Response` | required | List of rendered outputs |
+| response | [ ] `io.restorecommerce.rendering.Response` | required | List of rendered outputs |
 
 
 `io.restorecommerce.rendering.Response`
