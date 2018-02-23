@@ -27,6 +27,7 @@ export class Service {
   topics: any;
   server: chassis.Server;
   commandService: chassis.ICommandInterface;
+  offsetStore: chassis.OffsetStore;
   constructor(cfg: any, logger: Logger) {
     this.cfg = cfg;
     this.logger = logger;
@@ -55,6 +56,7 @@ export class Service {
   async subscribeTopics(): Promise<any> {
     this.logger.info('Subscribing Kafka topics');
     await this.events.start();
+    this.offsetStore = new chassis.OffsetStore(this.events, this.cfg, this.logger);
     const that = this;
     const listener = async function (msg: any, context: any, config: any, eventName: string): Promise<any> {
       const response = [];
@@ -141,10 +143,13 @@ export class Service {
     for (let topicType of topicTypes) {
       const topicName = kafkaCfg.topics[topicType].topic;
       this.topics[topicType] = this.events.topic(topicName);
+      const offsetValue = await this.offsetStore.getOffset(topicName);
+      this.logger.info('subscribing to topic with offset value',
+        topicName, offsetValue);
       if (kafkaCfg.topics[topicType].events) {
         const eventNames = kafkaCfg.topics[topicType].events;
         for (let eventName of eventNames) {
-          await this.topics[topicType].on(eventName, listener);
+          await this.topics[topicType].on(eventName, listener, offsetValue);
         }
       }
     }
@@ -162,6 +167,7 @@ export class Service {
   async stop(): Promise<any> {
     await co(this.server.end());
     await this.events.stop();
+    await this.offsetStore.stop();
   }
 }
 
