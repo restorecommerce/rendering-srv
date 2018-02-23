@@ -13,7 +13,7 @@ import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from './../service';
 
 /*
- * Note: To run this test, a running kafka instance is required.
+ * Note: To run this test, a running kafka and redis instance is required.
  */
 describe('rendering srv testing', () => {
 
