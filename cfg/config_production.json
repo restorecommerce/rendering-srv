@@ -28,7 +28,7 @@
           "io/restorecommerce/commandinterface.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "addr": "rendering0srv:50051"
+        "addr": "rendering-srv:50051"
       }
     ]
   }
