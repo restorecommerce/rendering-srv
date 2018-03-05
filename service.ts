@@ -49,6 +49,17 @@ export class Service {
     await co(this.server.start());
   }
 
+  marshallProtobufAny(msg: any): any {
+    return {
+      type_url: 'rendering',
+      value: Buffer.from(JSON.stringify(msg))
+    };
+  }
+
+  unmarshallProtobufAny(msg: any): any {
+    return JSON.parse(msg.value.toString());
+  }
+
   /**
    * subscribes to list of topics based on event names in config and
    * upon receiving the request renders the response
@@ -64,19 +75,21 @@ export class Service {
         that.logger.info('Rendering request received');
         const request = msg;
         const id: string = request.id;
-        if (!request || request.payload.length == 0) {
+        if (!request || !request.payload || request.payload.length == 0) {
           response.push('Missing payload');
         } else {
 
           const payloads = request.payload;
 
           for (let payload of payloads) {
-            const templates = JSON.parse(payload.templates);
-            const data = JSON.parse(payload.data);
+            const templates = that.unmarshallProtobufAny(payload.templates);
+            const data = that.unmarshallProtobufAny(payload.data);
 
             let options: any;
-            if (payload.options) {
-              options = JSON.parse(payload.options);
+            if (!!payload.options && !_.isEmpty(payload.options) && !_.isEmpty(payload.options.value)) {
+              options = that.unmarshallProtobufAny(payload.options);
+            } else {
+              options = {};
             }
 
             const renderingStrategy = payload.strategy || Strategy.INLINE;
@@ -99,8 +112,6 @@ export class Service {
                 style = await tplResponse.text();
               }
             }
-
-            const renderResponse = { content: '' };
 
             const responseObj = {};
             for (let key in templates) {
@@ -128,8 +139,7 @@ export class Service {
               responseObj[key] = rendered;
             }
 
-            renderResponse.content = JSON.stringify(responseObj);
-            response.push(renderResponse);
+            response.push(that.marshallProtobufAny(responseObj));
           }
         }
         await that.reply(id, response);
@@ -156,7 +166,7 @@ export class Service {
 
   }
 
-  async reply(requestID: string, response: Array<string>): Promise<any> {
+  async reply(requestID: string, response: Array<any>): Promise<any> {
     const message = {
       id: requestID,
       response

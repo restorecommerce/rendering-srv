@@ -19,22 +19,28 @@ describe('rendering srv testing', () => {
 
   let worker: Worker;
   let events: Events;
+
   let cfg: any;
-  let test_cfg: any;
   let logger: any;
+
   let validate: any;
+  let marshall: any;
+  let unmarshall: any;
   let listener: any;
+
   let responseID: string;
-  let response: Array<string>;
+  let response: Array<any>;
   let topic: Topic;
   before(async function start() {
 
-    cfg = sconfig(process.cwd());
-    test_cfg = sconfig(process.cwd() + '/test');
+    cfg = sconfig(process.cwd() + '/test');
     logger = new Logger(cfg.get('logger'));
 
     worker = new Worker();
     await worker.start(cfg, logger);
+
+    marshall = worker.service.marshallProtobufAny;
+    unmarshall = worker.service.unmarshallProtobufAny;
 
     listener = function (msg: any, context: any, config: any, eventName: string) {
       if (eventName == 'renderResponse') {
@@ -51,7 +57,7 @@ describe('rendering srv testing', () => {
 
   describe('with test response listener', () => {
     before(async function start() {
-      events = new Events(test_cfg.get('events:kafka'), logger);
+      events = new Events(cfg.get('events:kafka'), logger);
       await events.start();
       topic = events.topic('io.restorecommerce.rendering');
       topic.on('renderResponse', listener);
@@ -83,12 +89,12 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-plain',
         payload: [{
-          templates: JSON.stringify({
+          templates: marshall({
             message: {
               body: msgTpl
             }
           }),
-          data: JSON.stringify({
+          data: marshall({
             msg: msg
           })
         }]
@@ -101,9 +107,8 @@ describe('rendering srv testing', () => {
         should.exist(response);
         responseID.should.equal('test-plain');
         response.length.should.equal(1);
-        response[0].should.hasOwnProperty('content');
-        response[0]['content'].should.be.json;
-        const obj = JSON.parse(response[0]['content']);
+        response[0].should.be.json;
+        const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg: msg }));
@@ -125,8 +130,8 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-layout',
         payload: [{
-          templates: JSON.stringify({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: JSON.stringify({ msg: msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg: msg })
         }]
       };
 
@@ -137,9 +142,8 @@ describe('rendering srv testing', () => {
         should.exist(response);
         responseID.should.equal('test-layout');
         response.length.should.equal(1);
-        response[0].should.hasOwnProperty('content');
-        response[0]['content'].should.be.json;
-        const obj = JSON.parse(response[0]['content']);
+        response[0].should.be.json;
+        const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg: msg }));
@@ -178,8 +182,8 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-style',
         payload: [{
-          templates: JSON.stringify({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: JSON.stringify({ msg: msg }),
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg: msg }),
           style: stylesUrl
         }]
       };
@@ -193,11 +197,8 @@ describe('rendering srv testing', () => {
         should.exist(response);
         responseID.should.equal('test-style');
         response.length.should.equal(1);
-        // response[0].should.hasOwnProperty('id');
-        // response[0]['id'].should.equal('test-style');
-        response[0].should.hasOwnProperty('content');
-        response[0]['content'].should.be.json;
-        const obj = JSON.parse(response[0]['content']);
+        response[0].should.be.json;
+        const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg: msg }));
@@ -221,13 +222,13 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-multiple',
         payload: [{
-          templates: JSON.stringify({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: JSON.stringify({ msg: msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg: msg })
         },
         // rendering two exactly equal templates
         {
-          templates: JSON.stringify({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: JSON.stringify({ msg: msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg: msg })
         }]
       };
 
@@ -238,22 +239,13 @@ describe('rendering srv testing', () => {
         should.exist(response);
         responseID.should.equal('test-multiple');
         response.length.should.equal(2);
-
-        response[0].should.hasOwnProperty('content');
-        response[0]['content'].should.be.json;
-        response[1].should.hasOwnProperty('content');
-        response[1]['content'].should.be.json;
-
-        const obj1 = JSON.parse(response[0]['content']);
-        obj1.should.hasOwnProperty('message');
-
-        const obj2 = JSON.parse(response[1]['content']);
-        obj2.should.hasOwnProperty('message');
-
-        let message = obj1.message;
-        message.should.equal(renderer.render({ msg: msg }));
-        message = obj2.message;
-        message.should.equal(renderer.render({ msg: msg }));
+        response.forEach(element => {
+          const obj = unmarshall(element);
+          obj.should.be.json;
+          obj.should.hasOwnProperty('message');
+          const message = obj.message;
+          message.should.equal(renderer.render({ msg: msg }));
+        });
       };
 
       const offset = await topic.$offset(-1) + 1;
