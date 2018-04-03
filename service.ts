@@ -2,7 +2,6 @@
 
 import * as _ from 'lodash';
 import * as cheerio from 'cheerio';
-import * as co from 'co';
 import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
@@ -45,8 +44,8 @@ export class Service {
     await this.subscribeTopics();
     this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger, this.events);
     const serviceNamesCfg = this.cfg.get('serviceNames');
-    await co(this.server.bind(serviceNamesCfg.cis, this.commandService));
-    await co(this.server.start());
+    await this.server.bind(serviceNamesCfg.cis, this.commandService);
+    await this.server.start();
   }
 
   marshallProtobufAny(msg: any): any {

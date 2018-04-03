@@ -22,7 +22,6 @@
     "@restorecommerce/protos": "github:restorecommerce/protos",
     "@restorecommerce/service-config": "^0.1.0",
     "cheerio": "^1.0.0-rc.2",
-    "co": "^4.6.0",
     "lodash": "^4.17.2",
     "node-fetch": "^1.7.3"
   },
@@ -37,7 +36,7 @@
   },
   "scripts": {
     "start": "npm run createtopics && node start.js",
-    "dev": "export NODE_ENV=development; npm run createtopics && nodemon start.js",
+    "dev": "export NODE_ENV=development; npm run createtopics && nodemon start.js --trace-warnings",
     "pretest": "npm run tsctests && npm run createtopics",
     "test": "npm run lint && npm run mocha",
     "lint": "tslint './lib/*.ts' './test*.ts' './service.ts' './start.ts'",
