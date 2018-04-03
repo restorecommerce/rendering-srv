@@ -175,7 +175,7 @@ export class Service {
   }
 
   async stop(): Promise<any> {
-    await co(this.server.end());
+    await this.server.stop();
     await this.events.stop();
     await this.offsetStore.stop();
   }
