@@ -104,6 +104,7 @@ export class Service {
 
             let style = payload.style;
             if (style) {
+              const url = new URL(style).toString(); // normalizing URL
               const tplResponse = await fetch(style, {});
               if (!tplResponse.ok) {
                 this.logger.info('Could not retrieve CSS file from provided URL');
