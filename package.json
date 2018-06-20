@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.1.0",
+  "version": "0.0.7",
   "description": "Handlebars-HTML rendering microservice",
   "main": "index.js",
   "author": "Invend GmbH",
