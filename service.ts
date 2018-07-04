@@ -45,6 +45,14 @@ export class Service {
     this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger, this.events);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await this.server.bind(serviceNamesCfg.cis, this.commandService);
+
+    // Add ReflectionService
+    const reflectionServiceName = serviceNamesCfg.reflection;
+    const transportName = this.cfg.get(`server:services:${reflectionServiceName}:serverReflectionInfo:transport:0`);
+    const transport = this.server.transport[transportName];
+    const reflectionService = new chassis.ServerReflection(transport.$builder, this.server.config);
+    await this.server.bind(reflectionServiceName, reflectionService);
+
     await this.server.start();
   }
 

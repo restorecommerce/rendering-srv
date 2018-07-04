@@ -77,6 +77,13 @@
             "grpcRendering"
           ]
         }
+      },
+      "io-restorecommerce-rendering-reflection": {
+        "serverReflectionInfo": {
+          "transport": [
+            "grpcRendering"
+          ]
+        }
       }
     },
     "transports": [
@@ -84,10 +91,12 @@
         "name": "grpcRendering",
         "provider": "grpc",
         "services": {
-          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service"
+          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service",
+          "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection"
         },
         "protos": [
-          "io/restorecommerce/commandinterface.proto"
+          "io/restorecommerce/commandinterface.proto",
+          "grpc/reflection/v1alpha/reflection.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
         "addr": "localhost:50051"
@@ -95,6 +104,7 @@
     ]
   },
   "serviceNames": {
-    "cis": "io-restorecommerce-rendering-cis"
+    "cis": "io-restorecommerce-rendering-cis",
+    "reflection": "io-restorecommerce-rendering-reflection"
   }
 }
