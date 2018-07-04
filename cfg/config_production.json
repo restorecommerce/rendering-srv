@@ -20,12 +20,13 @@
     "transports": [
       {
         "name": "grpcRendering",
-        "provider": "grpc",
-        "services": {
-          "io-restorecommerce-rendering-srv": "io.restorecommerce.commandinterface.Service"
+         "services": {
+          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service",
+          "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection"
         },
         "protos": [
-          "io/restorecommerce/commandinterface.proto"
+          "io/restorecommerce/commandinterface.proto",
+          "grpc/reflection/v1alpha/reflection.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
         "addr": "rendering-srv:50051"
