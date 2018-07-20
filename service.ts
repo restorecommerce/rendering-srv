@@ -166,7 +166,8 @@ export class Service {
       if (kafkaCfg.topics[topicType].events) {
         const eventNames = kafkaCfg.topics[topicType].events;
         for (let eventName of eventNames) {
-          await this.topics[topicType].on(eventName, listener, offsetValue);
+          await this.topics[topicType].on(eventName, listener,
+            { startingOffset: offsetValue });
         }
       }
     }
