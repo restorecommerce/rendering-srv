@@ -15,23 +15,23 @@
   ],
   "dependencies": {
     "@restorecommerce/chassis-srv": "github:restorecommerce/chassis-srv",
-    "@restorecommerce/cluster-service": "^0.1.0",
-    "@restorecommerce/handlebars-helperized": "^0.1.1",
+    "@restorecommerce/cluster-service": "^0.1.1",
+    "@restorecommerce/handlebars-helperized": "^0.1.2",
     "@restorecommerce/kafka-client": "github:restorecommerce/kafka-client",
-    "@restorecommerce/logger": "^0.1.5",
+    "@restorecommerce/logger": "^0.1.6",
     "@restorecommerce/protos": "github:restorecommerce/protos",
-    "@restorecommerce/service-config": "^0.1.0",
+    "@restorecommerce/service-config": "^0.1.1",
     "cheerio": "^1.0.0-rc.2",
-    "lodash": "^4.17.2",
-    "node-fetch": "^2.1.2"
+    "lodash": "^4.17.10",
+    "node-fetch": "^2.2.0"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.3",
-    "coveralls": "^3.0.0",
+    "@types/mocha": "^5.2.5",
+    "coveralls": "^3.0.2",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
-    "nodemon": "^1.15.1",
-    "should": "^13.2.1"
+    "nodemon": "^1.18.3",
+    "should": "^13.2.3"
   },
   "scripts": {
     "start": "npm run createtopics && node start.js",
