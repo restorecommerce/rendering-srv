@@ -13,7 +13,7 @@
   },
   "events": {
     "kafka": {
-      "connectionString": "zookeeper:2181"
+      "kafkaHost": "kafka:9092"
     }
   },
   "server": {
