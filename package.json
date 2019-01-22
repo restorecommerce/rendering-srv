@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "coveralls": "^3.0.2",
+    "cross-env": "^5.2.0",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
@@ -37,16 +38,16 @@
   },
   "scripts": {
     "start": "npm run createtopics && node start.js",
-    "dev": "set NODE_ENV=development; npm run createtopics && nodemon start.js --trace-warnings",
+    "dev": "cross-env NODE_ENV=development npm run createtopics && nodemon start.js --trace-warnings",
     "pretest": "npm run tsctests && npm run createtopics",
     "test": "npm run lint && npm run mocha",
     "lint": "tslint ./lib/*.ts ./test*.ts ./service.ts ./start.ts",
-    "mocha": "set \"NODE_ENV=test\" && \"./node_modules/.bin/mocha\" --timeout 60000 ./test/test.js --stack-trace --exit",
-    "coveralls": "set NODE_ENV=test; istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*.js --exit",
+    "mocha": "cross-env NODE_ENV=test mocha --timeout 60000 ./test/test.js --stack-trace --exit",
+    "coveralls": "cross-env NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*.js --exit",
     "postinstall": "tsc -d",
     "createtopics": "node setupTopics.js io.restorecommerce.rendering",
-    "test-debug": "set NODE_ENV=test;  mocha --inspect-brk",
-    "test-prod-env": "set NODE_ENV=prod mocha",
+    "test-debug": "cross-env NODE_ENV=test mocha --inspect-brk",
+    "test-prod-env": "cross-env NODE_ENV=prod mocha",
     "tsctests": "tsc ./test/test.ts --module commonjs -target ES6"
   },
   "engines": {
