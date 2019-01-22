@@ -23,7 +23,9 @@
     "@restorecommerce/service-config": "^0.1.1",
     "cheerio": "^1.0.0-rc.2",
     "lodash": "^4.17.10",
-    "node-fetch": "^2.2.0"
+    "node-fetch": "^2.2.0",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.4"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -35,17 +37,17 @@
   },
   "scripts": {
     "start": "npm run createtopics && node start.js",
-    "dev": "export NODE_ENV=development; npm run createtopics && nodemon start.js --trace-warnings",
+    "dev": "set NODE_ENV=development; npm run createtopics && nodemon start.js --trace-warnings",
     "pretest": "npm run tsctests && npm run createtopics",
     "test": "npm run lint && npm run mocha",
-    "lint": "tslint './lib/*.ts' './test*.ts' './service.ts' './start.ts'",
-    "mocha": "export NODE_ENV=test;  mocha --timeout 60000 ./test/*.js --stack-trace --exit",
-    "coveralls": "export NODE_ENV=test; istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*.js --exit",
+    "lint": "tslint ./lib/*.ts ./test*.ts ./service.ts ./start.ts",
+    "mocha": "set \"NODE_ENV=test\" && \"./node_modules/.bin/mocha\" --timeout 60000 ./test/test.js --stack-trace --exit",
+    "coveralls": "set NODE_ENV=test; istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*.js --exit",
     "postinstall": "tsc -d",
     "createtopics": "node setupTopics.js io.restorecommerce.rendering",
-    "test-debug": "export NODE_ENV=test;  mocha --inspect-brk",
-    "test-prod-env": "NODE_ENV=prod mocha",
-    "tsctests": "tsc test/*.ts --module commonjs -target ES6"
+    "test-debug": "set NODE_ENV=test;  mocha --inspect-brk",
+    "test-prod-env": "set NODE_ENV=prod mocha",
+    "tsctests": "tsc ./test/test.ts --module commonjs -target ES6"
   },
   "engines": {
     "node": ">= 9.2.0"
