@@ -63,6 +63,10 @@
       "body": "test_message_body.hbs",
       "layout": "test_message_layout.hbs",
       "style": "css/test.css"
+    },
+    "message_with_inline_css": {
+      "body": "test_message_body_inline_css.hbs",
+      "style": "css/test_message_body_inline_css.css"
     }
   },
   "static_server": {

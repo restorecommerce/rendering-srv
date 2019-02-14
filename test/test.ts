@@ -191,7 +191,7 @@ describe('rendering srv testing', () => {
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
       const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
-
+      
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -251,6 +251,25 @@ describe('rendering srv testing', () => {
       const offset = await topic.$offset(-1) + 1;
       await topic.emit('renderRequest', renderRequest);
       await topic.$wait(offset);
+    });
+
+    it('Should render CSS inline on complex template', async () => {
+
+      const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
+
+      const root = cfg.get('templates:root');
+      const templates = cfg.get('templates:message_with_inline_css');
+      const bodyTpl = fs.readFileSync(root + templates.body).toString();
+      const msg = 'Hello World!';
+
+      const stylesPath = templates.style;
+      const style = fs.readFileSync(root + stylesPath).toString();
+      const renderer = new Renderer(bodyTpl, '', style, {});
+      const rendered = renderer.render({ msg: msg });
+      validate = () => {
+        should.exist(rendered);
+        rendered.split('style').length.should.equal(128);
+      };
     });
   });
 });
