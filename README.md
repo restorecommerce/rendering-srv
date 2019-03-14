@@ -71,6 +71,43 @@ This service uses [chassis-srv](http://github.com/restorecommerce/chassis-srv), 
 - stores the offset values for Kafka topics at regular intervals to [Redis](https://redis.io/).
 
 
-## Usage
+## Development
+
+### Tests
 
 See [tests](https://github.com/restorecommerce/rendering-srv/tree/master/test).
+
+
+## Usage
+
+### Development
+
+- Install dependencies
+
+```sh
+npm install
+```
+
+- Build application
+
+```sh
+# compile the code
+npm run build
+```
+
+- Run application and restart it on changes in the code
+
+```sh
+# Start rendering-srv backend in dev mode
+npm run dev
+```
+
+### Production
+
+```sh
+# compile the code
+npm run build
+
+# run compiled server
+npm start
+```
