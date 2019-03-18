@@ -12,6 +12,9 @@ import * as sconfig from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from './../service';
 
+const HTML_CONTENT_TYPE = 'application/html';
+const TEXT_CONTENT_TYPE = 'application/text';
+
 /*
  * Note: To run this test, a running kafka and redis instance is required.
  */
@@ -91,11 +94,12 @@ describe('rendering srv testing', () => {
         payload: [{
           templates: marshall({
             message: {
-              body: msgTpl
+              body: msgTpl,
+              contentType: TEXT_CONTENT_TYPE
             }
           }),
           data: marshall({
-            msg: msg
+            msg
           })
         }]
       };
@@ -111,12 +115,12 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg: msg }));
+        message.should.equal(renderer.render({ msg }, TEXT_CONTENT_TYPE));
       };
 
       const offset = await topic.$offset(-1) + 1;
       await topic.emit('renderRequest', renderRequest);
-      await topic.$wait(offset)
+      await topic.$wait(offset);
     });
 
     it('should render with layout', async () => {
@@ -130,8 +134,10 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-layout',
         payload: [{
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: marshall({ msg: msg })
+          templates: marshall({
+            message: { body: bodyTpl, layout: layoutTpl, contentType: HTML_CONTENT_TYPE },
+          }),
+          data: marshall({ msg })
         }]
       };
 
@@ -146,8 +152,8 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg: msg }));
-      }
+        message.should.equal(renderer.render({ msg }, HTML_CONTENT_TYPE));
+      };
 
       const offset = await topic.$offset(-1) + 1;
       await topic.emit('renderRequest', renderRequest);
@@ -182,8 +188,8 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-style',
         payload: [{
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: marshall({ msg: msg }),
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'text/CSS' } }),
+          data: marshall({ msg }),
           style: stylesUrl
         }]
       };
@@ -191,7 +197,7 @@ describe('rendering srv testing', () => {
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
       const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
-      
+
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -201,7 +207,7 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg: msg }));
+        message.should.equal(renderer.render({ msg }, 'text/CSS'));
       };
 
       const offset = await topic.$offset(-1) + 1;
@@ -222,18 +228,18 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-multiple',
         payload: [{
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: marshall({ msg: msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+          data: marshall({ msg })
         },
         // rendering two exactly equal templates
         {
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: marshall({ msg: msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+          data: marshall({ msg })
         }]
       };
 
       const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
-      const rendered = renderer.render({ msg: msg });
+      const rendered = renderer.render({ msg }, TEXT_CONTENT_TYPE);
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -244,7 +250,7 @@ describe('rendering srv testing', () => {
           obj.should.be.json;
           obj.should.hasOwnProperty('message');
           const message = obj.message;
-          message.should.equal(renderer.render({ msg: msg }));
+          message.should.equal(renderer.render({ msg }, TEXT_CONTENT_TYPE));
         });
       };
 
@@ -265,7 +271,7 @@ describe('rendering srv testing', () => {
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
       const renderer = new Renderer(bodyTpl, '', style, {});
-      const rendered = renderer.render({ msg: msg });
+      const rendered = renderer.render({ msg }, HTML_CONTENT_TYPE);
       validate = () => {
         should.exist(rendered);
         rendered.split('style').length.should.equal(128);

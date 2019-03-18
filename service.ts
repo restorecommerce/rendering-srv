@@ -128,6 +128,9 @@ export class Service {
               const layout = template.layout; // may be null
               // read the input content type
               const contType = template.contentType;
+               if (!contType) {
+                response.push('Missing content-type');
+              }
 
               let tplRenderer;
               if (renderingStrategy == Strategy.INLINE) {
