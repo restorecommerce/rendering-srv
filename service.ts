@@ -126,6 +126,8 @@ export class Service {
               const template = templates[key];
               const body = template.body;
               const layout = template.layout; // may be null
+              // read the input content type
+              const contType = template.contentType;
 
               let tplRenderer;
               if (renderingStrategy == Strategy.INLINE) {
@@ -135,7 +137,7 @@ export class Service {
                 tplRenderer = new Renderer(body, layout, null, options);
               }
 
-              let rendered = tplRenderer.render(data);  // rendered HTML string
+              let rendered = tplRenderer.render(data, contType);  // rendered HTML string
               if (renderingStrategy == Strategy.COPY && style) {
                 const html = cheerio.load(rendered);
                 html('html').append('<style></style>');
@@ -144,6 +146,7 @@ export class Service {
                 rendered = html.html();
               }
               responseObj[key] = rendered;
+              Object.assign(responseObj, { content_type: contType});
             }
 
             response.push(that.marshallProtobufAny(responseObj));

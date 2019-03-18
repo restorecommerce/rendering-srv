@@ -43,7 +43,7 @@ List of events emitted to Kafka by this microservice for below topics:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| templates | string | required | JSON mapping labels to body and layout templates |
+| templates | string | required | JSON mapping labels to body and layout templates, contentType ex: 'application/html' or 'application/text' |
 | data | string | required | JSON mapping content to render output |
 | style | string | optional | A URL pointing to a stylesheet |
 | strategy | enum | optional | Strategy to use for applying the stylesheet. Possible values are `INLINE` and `COPY`|
@@ -62,6 +62,7 @@ List of events emitted to Kafka by this microservice for below topics:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | content | string | required | JSON mapping of template labels to rendered output |
+| content_type | string | required | content-type ex: 'application\html' or 'application\text' |
 
 ## Chassis Service
 
