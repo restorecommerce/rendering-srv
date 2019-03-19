@@ -110,6 +110,7 @@ export class Service {
               response.push(error);
             }
 
+            // Modify to handle style for each template -> style
             let style = payload.style;
             if (style) {
               const tplResponse = await fetch(style, {});
@@ -120,17 +121,18 @@ export class Service {
               }
             }
 
+            // read the input content type
+            const contType = payload.content_type;
+            if (!contType) {
+              response.push('Missing content-type');
+            }
+
             const responseObj = {};
             for (let key in templates) {
               // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
               const template = templates[key];
               const body = template.body;
               const layout = template.layout; // may be null
-              // read the input content type
-              const contType = template.contentType;
-               if (!contType) {
-                response.push('Missing content-type');
-              }
 
               let tplRenderer;
               if (renderingStrategy == Strategy.INLINE) {
@@ -140,7 +142,7 @@ export class Service {
                 tplRenderer = new Renderer(body, layout, null, options);
               }
 
-              let rendered = tplRenderer.render(data, contType);  // rendered HTML string
+              let rendered = tplRenderer.render(data);  // rendered HTML string
               if (renderingStrategy == Strategy.COPY && style) {
                 const html = cheerio.load(rendered);
                 html('html').append('<style></style>');
@@ -149,7 +151,9 @@ export class Service {
                 rendered = html.html();
               }
               responseObj[key] = rendered;
-              Object.assign(responseObj, { content_type: contType});
+              if (contType) {
+                Object.assign(responseObj, { content_type: contType });
+              }
             }
 
             response.push(that.marshallProtobufAny(responseObj));

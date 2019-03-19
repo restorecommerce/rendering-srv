@@ -14,6 +14,18 @@ import { Worker } from './../service';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';
+const CSS_CONTENT_TYPE = 'text/CSS';
+
+const staticServe = function (req: any, res: any): any {
+  let fileLoc = path.resolve(process.cwd() + '/test/fixtures');
+  fileLoc = path.join(fileLoc, req.url);
+
+  const extname = path.extname(fileLoc);
+  const file = fs.readFileSync(fileLoc);
+  res.writeHead(200, { 'Content-Type': 'text/css' });
+  res.write(file);
+  return res.end();
+};
 
 /*
  * Note: To run this test, a running kafka and redis instance is required.
@@ -34,7 +46,7 @@ describe('rendering srv testing', () => {
   let responseID: string;
   let response: Array<any>;
   let topic: Topic;
-  before(async function start() {
+  before(async function start(): Promise<void> {
 
     cfg = sconfig(process.cwd() + '/test');
     logger = new Logger(cfg.get('logger'));
@@ -45,7 +57,7 @@ describe('rendering srv testing', () => {
     marshall = worker.service.marshallProtobufAny;
     unmarshall = worker.service.unmarshallProtobufAny;
 
-    listener = function (msg: any, context: any, config: any, eventName: string) {
+    listener = function (msg: any, context: any, config: any, eventName: string): void {
       if (eventName == 'renderResponse') {
         responseID = msg.id;
         response = msg.response;
@@ -54,18 +66,18 @@ describe('rendering srv testing', () => {
     };
   });
 
-  after(async function stop() {
+  after(async function stop(): Promise<void> {
     await worker.stop();
   });
 
   describe('with test response listener', () => {
-    before(async function start() {
+    before(async function start(): Promise<void> {
       events = new Events(cfg.get('events:kafka'), logger);
       await events.start();
       topic = events.topic('io.restorecommerce.rendering');
       topic.on('renderResponse', listener);
     });
-    after(async function stop() {
+    after(async function stop(): Promise<void> {
       await events.stop();
     });
     it('should return empty response if request payload is empty', async () => {
@@ -94,13 +106,13 @@ describe('rendering srv testing', () => {
         payload: [{
           templates: marshall({
             message: {
-              body: msgTpl,
-              contentType: TEXT_CONTENT_TYPE
+              body: msgTpl
             }
           }),
           data: marshall({
             msg
-          })
+          }),
+          content_type: TEXT_CONTENT_TYPE
         }]
       };
 
@@ -115,7 +127,7 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg }, TEXT_CONTENT_TYPE));
+        message.should.equal(renderer.render({ msg }));
       };
 
       const offset = await topic.$offset(-1) + 1;
@@ -135,9 +147,10 @@ describe('rendering srv testing', () => {
         id: 'test-layout',
         payload: [{
           templates: marshall({
-            message: { body: bodyTpl, layout: layoutTpl, contentType: HTML_CONTENT_TYPE },
+            message: { body: bodyTpl, layout: layoutTpl },
           }),
-          data: marshall({ msg })
+          data: marshall({ msg }),
+          content_type: HTML_CONTENT_TYPE
         }]
       };
 
@@ -152,7 +165,7 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg }, HTML_CONTENT_TYPE));
+        message.should.equal(renderer.render({ msg }));
       };
 
       const offset = await topic.$offset(-1) + 1;
@@ -161,17 +174,6 @@ describe('rendering srv testing', () => {
     });
 
     it('should render with external stylesheet', async () => {
-      const staticServe = function (req: any, res: any): any {
-        let fileLoc = path.resolve(process.cwd() + '/test/fixtures');
-        fileLoc = path.join(fileLoc, req.url);
-
-        const extname = path.extname(fileLoc);
-        const file = fs.readFileSync(fileLoc);
-        res.writeHead(200, { 'Content-Type': 'text/css' });
-        res.write(file);
-        return res.end();
-      };
-
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
       // setting static server to serve templates over HTTP
       const httpServer = http.createServer(staticServe);
@@ -188,9 +190,10 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-style',
         payload: [{
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'text/CSS' } }),
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({ msg }),
-          style: stylesUrl
+          style: stylesUrl,
+          content_type: CSS_CONTENT_TYPE
         }]
       };
 
@@ -207,7 +210,7 @@ describe('rendering srv testing', () => {
         const obj = unmarshall(response[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
-        message.should.equal(renderer.render({ msg }, 'text/CSS'));
+        message.should.equal(renderer.render({ msg }));
       };
 
       const offset = await topic.$offset(-1) + 1;
@@ -228,18 +231,19 @@ describe('rendering srv testing', () => {
       const renderRequest = {
         id: 'test-multiple',
         payload: [{
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
-          data: marshall({ msg })
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg }),
+          content_type: TEXT_CONTENT_TYPE
         },
         // rendering two exactly equal templates
         {
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
-          data: marshall({ msg })
+          data: marshall({ msg }),
+          content_type: TEXT_CONTENT_TYPE
         }]
       };
 
       const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
-      const rendered = renderer.render({ msg }, TEXT_CONTENT_TYPE);
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -250,7 +254,7 @@ describe('rendering srv testing', () => {
           obj.should.be.json;
           obj.should.hasOwnProperty('message');
           const message = obj.message;
-          message.should.equal(renderer.render({ msg }, TEXT_CONTENT_TYPE));
+          message.should.equal(renderer.render({ msg }));
         });
       };
 
@@ -260,7 +264,6 @@ describe('rendering srv testing', () => {
     });
 
     it('Should render CSS inline on complex template', async () => {
-
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
 
       const root = cfg.get('templates:root');
@@ -271,7 +274,7 @@ describe('rendering srv testing', () => {
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
       const renderer = new Renderer(bodyTpl, '', style, {});
-      const rendered = renderer.render({ msg }, HTML_CONTENT_TYPE);
+      const rendered = renderer.render({ msg });
       validate = () => {
         should.exist(rendered);
         rendered.split('style').length.should.equal(128);
