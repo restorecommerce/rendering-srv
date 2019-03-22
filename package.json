@@ -16,7 +16,7 @@
   "dependencies": {
     "@restorecommerce/chassis-srv": "github:restorecommerce/chassis-srv",
     "@restorecommerce/cluster-service": "^0.1.1",
-    "@restorecommerce/handlebars-helperized": "github:restorecommerce/handlebars-helperized",
+    "@restorecommerce/handlebars-helperized": "^0.1.3",
     "@restorecommerce/kafka-client": "github:restorecommerce/kafka-client",
     "@restorecommerce/logger": "^0.1.6",
     "@restorecommerce/protos": "github:restorecommerce/protos",
