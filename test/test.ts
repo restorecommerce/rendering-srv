@@ -264,10 +264,16 @@ describe('rendering srv testing', () => {
     });
 
     it('Should render CSS inline on complex template', async () => {
+      const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
+      // setting static server to serve templates over HTTP
+      const httpServer = http.createServer(staticServe);
+      httpServer.listen(cfg.get('static_server:port'));
+
       const root = cfg.get('templates:root');
       const templates = cfg.get('templates:message_with_inline_css');
       const bodyTpl = fs.readFileSync(root + templates.body).toString();
       const layoutTpl = fs.readFileSync(root + templates.layout).toString();
+      const stylesUrl = prefix + templates.style;
 
       // Template variables
       const firstName = 'Max';
@@ -320,11 +326,12 @@ describe('rendering srv testing', () => {
             item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
             subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
             accountPurpose, saleTerms}),
-          content_type: TEXT_CONTENT_TYPE
+            style: stylesUrl,
+            content_type: 'application/html'
         },
         // rendering two exactly equal templates
         {
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'application/html' } }),
           data: marshall({
             firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
             paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
@@ -333,11 +340,14 @@ describe('rendering srv testing', () => {
             subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
             accountPurpose, saleTerms
           }),
-          content_type: TEXT_CONTENT_TYPE
+          style: stylesUrl,
+          content_type: 'application/html'
         }]
       };
 
-      const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
+      const stylesPath = templates.style;
+      const style = fs.readFileSync(root + stylesPath).toString();
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -362,6 +372,8 @@ describe('rendering srv testing', () => {
       const offset = await topic.$offset(-1) + 1;
       await topic.emit('renderRequest', renderRequest);
       await topic.$wait(offset);
+
+      httpServer.close();
     });
   });
 });
