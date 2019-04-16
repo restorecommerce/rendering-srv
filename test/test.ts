@@ -268,19 +268,71 @@ describe('rendering srv testing', () => {
       const templates = cfg.get('templates:message_with_inline_css');
       const bodyTpl = fs.readFileSync(root + templates.body).toString();
       const layoutTpl = fs.readFileSync(root + templates.layout).toString();
-      const msg = 'Hello World!';
+
+      // Template variables
+      const firstName = 'Max';
+      const lastName = 'Mustermann';
+      const companyName = 'VCL Company SE';
+      const streetAddress = 'Somestreet 45';
+      const cityCodeAdress = '70174 Stuttgart';
+      const invoiceNo = '2017110800169';
+      const invoiceDate = '19.09.2019';
+      const paymentStatus = 'unpaid';
+      const customerNo = '1694923665';
+      const vatIdNo = 'DE000000000';
+      const billingStreet = 'Mustermannstrasse 10';
+      const billingCity = 'Stuttgart';
+      const billingCountry = 'Germany';
+      const livingStreet = 'Mustermannstrasse 12';
+      const livingCity = 'Berlin';
+      const livingCountry = 'Germany';
+      const item1description = 'Article 23784628';
+      const item1quantity = '1';
+      const item1vat = '19%';
+      const item1amount = '12.00';
+      const item2description = 'Article 34895789';
+      const item2quantity = '1 000';
+      const item2vat = '19%';
+      const item2amount = '11,111.11';
+      const item3description = 'Article 89054373';
+      const item3quantity = '2';
+      const item3vat = '7%';
+      const item3amount = '1.15';
+      const subTotalGross = '27,689.22';
+      const subTotalNet = '23,384.22';
+      const vat1total = '4,224.50';
+      const vat2total = '80.50';
+      const billTotal = '27,689.22';
+      const accountBank = 'Deutsche Bank AG';
+      const accountIban = 'DE60200700000000000000';
+      const accountBic = 'DEUTDEXXXXX';
+      const accountPurpose = '2017110800169';
+      const saleTerms = 'Terms, more terms, even more terms.';
 
       const renderRequest = {
         id: 'test-complex-css',
         payload: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
-          data: marshall({ msg }),
+          data: marshall({
+            firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
+            paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
+            livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
+            item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
+            subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
+            accountPurpose, saleTerms}),
           content_type: TEXT_CONTENT_TYPE
         },
         // rendering two exactly equal templates
         {
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
-          data: marshall({ msg }),
+          data: marshall({
+            firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
+            paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
+            livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
+            item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
+            subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
+            accountPurpose, saleTerms
+          }),
           content_type: TEXT_CONTENT_TYPE
         }]
       };
@@ -296,7 +348,14 @@ describe('rendering srv testing', () => {
           obj.should.be.json;
           obj.should.hasOwnProperty('message');
           const message = obj.message;
-          message.should.equal(renderer.render({ msg }));
+          message.should.equal(renderer.render({
+            firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
+            paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
+            livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
+            item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
+            subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
+            accountPurpose, saleTerms
+          }));
         });
       };
 

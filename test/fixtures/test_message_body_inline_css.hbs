@@ -1,6 +1,6 @@
 <div class="vclEmailViewport">
   <div class="vclHidden-print">
-    <h1 class="vclAlignCentered">Hello Max Mustermann,</h1>
+    <h1 class="vclAlignCentered">Hello {{firstName}} {{lastName}},</h1>
     <h2 class="vclAlignCentered">Thanks for your order!</h2>
     <br>
   </div>
@@ -8,32 +8,32 @@
     <div class="vclFloatLeft">
       <img class="vclResponsiveImage vclLogo" role="presentation" src="https://cdn.jsdelivr.net/gh/vcl/vcl/gfx/vcl_logo_square-bw.svg" style="width: 9em; margin-top: 1em;">
       <div style="margin-bottom: 1em;">
-        <span class="vclText">VCL Company SE</span>&nbsp;·&nbsp;
-        <span class="vclText">Somestreet 45</span>&nbsp;·&nbsp;
-        <span class="vclText">70174 Stuttgart</span>
+        <span class="vclText">{{companyName}}</span>&nbsp;·&nbsp;
+        <span class="vclText">{{streetAddress}}</span>&nbsp;·&nbsp;
+        <span class="vclText">{{cityCodeAdress}}</span>
       </div>
     </div>
 
     <table class="vclTable vclCondensed vclFloatRight invoicemeta" style="width: 20em; margin-top: 1.5em;">
       <tr>
         <td><b>Invoice No.</b></td>
-        <td class="vclAlignRight">2017110800169</td>
+        <td class="vclAlignRight">{{invoiceNo}}</td>
       </tr>
       <tr>
         <td><b>Date</b></td>
-        <td class="vclAlignRight">19.09.2019</td>
+        <td class="vclAlignRight">{{invoiceDate}}</td>
       </tr>
       <tr>
         <td><b>Payment Status</b></td>
-        <td class="vclAlignRight">unpaid</td>
+        <td class="vclAlignRight">{{paymentStatus}}</td>
       </tr>
       <tr>
         <td><b>Customer No.</b></td>
-        <td class="vclAlignRight">1694923665</td>
+        <td class="vclAlignRight">{{customerNo}}</td>
       </tr>
       <tr>
         <td><b>VAT-ID-No.</b></td>
-        <td class="vclAlignRight">DE000000000</td>
+        <td class="vclAlignRight">{{vatIdNo}}</td>
       </tr>
     </table>
     <br>
@@ -45,19 +45,19 @@
        <tbody>
         <tr>
           <td><b>Rechnungsadresse</b></td>
-          <td>Max Mustermann</td>
+          <td>{{firstName}} {{lastName}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Mustermannstrasse 10</td>
+          <td>{{billingStreet}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Stuttgart</td>
+          <td>{{billingCity}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Germany</td>
+          <td>{{billingCountry}}</td>
         </tr>
       </tbody>
     </table>
@@ -66,19 +66,19 @@
       <tbody>
         <tr>
           <td><b>Lieferadresse</b></td>
-          <td>Max Mustermann</td>
+          <td>{{firstName}} {{lastName}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Mustermannstrasse 10</td>
+          <td>{{livingStreet}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Stuttgart</td>
+          <td>{{livingCity}}</td>
         </tr>
         <tr>
           <td> </td>
-          <td>Germany</td>
+          <td>{{livingCountry}}</td>
         </tr>
       </tbody>
     </table>
@@ -98,47 +98,47 @@
         <tbody>
           <tr>
             <td>1</td>
-            <td>Article 23784628</td>
-            <td class="vclAlignRight">1</td>
-            <td class="vclAlignRight">19%</td>
-            <td class="vclAlignRight">12.00</td>
+            <td>{{item1description}}</td>
+            <td class="vclAlignRight">{{item1quantity}}</td>
+            <td class="vclAlignRight">{{item1vat}}</td>
+            <td class="vclAlignRight">{{item1amount}}</td>
           </tr>
           <tr>
             <td>2</td>
-            <td>Article 34895789</td>
-            <td class="vclAlignRight">1 000</td>
-            <td class="vclAlignRight">19%</td>
-            <td class="vclAlignRight">11,111.11</td>
+            <td>{{item2description}}</td>
+            <td class="vclAlignRight">{{item2quantity}}</td>
+            <td class="vclAlignRight">{{item2vat}}</td>
+            <td class="vclAlignRight">{{item2amount}}</td>
           </tr>
           <tr>
             <td>3</td>
-            <td>Article 89054373</td>
-            <td class="vclAlignRight">2</td>
-            <td class="vclAlignRight">7%</td>
-            <td class="vclAlignRight">1.15</td>
+            <td>{{item3description}}</td>
+            <td class="vclAlignRight">{{item3quantity}}</td>
+            <td class="vclAlignRight">{{item3vat}}</td>
+            <td class="vclAlignRight">{{item3amount}}</td>
           </tr>
           <tr class="vclSumTableSubTotal">
             <td colspan="3">Sub-Total (gross)</td>
-            <td colspan="2" class="vclAlignRight">27,689.22 <small>€</small></td>
+            <td colspan="2" class="vclAlignRight">{{subTotalGross}} <small>€</small></td>
           </tr>
           <tr class="vclNoBorder">
             <td colspan="3">Sub-Total (net)</td>
-            <td colspan="2" class="vclAlignRight">23,384.22 <small>€</small></td>
+            <td colspan="2" class="vclAlignRight">{{subTotalNet}} <small>€</small></td>
           </tr>
           <tr class="vclNoBorder">
             <td colspan="5">&nbsp;</td>
           </tr>
           <tr class="vclNoBorder">
             <td colspan="3">+ VAT 19%</td>
-            <td colspan="2" class="vclAlignRight">4,224.50 <small>€</small></td>
+            <td colspan="2" class="vclAlignRight">{{vat1total}} <small>€</small></td>
           </tr>
           <tr class="vclNoBorder">
             <td colspan="3">+ VAT 7%</td>
-            <td colspan="2" class="vclAlignRight">80.50 <small>€</small></td>
+            <td colspan="2" class="vclAlignRight">{{vat2total}} <small>€</small></td>
           </tr>
           <tr class="vclSumTableTotal">
             <td colspan="3">To be paid</td>
-            <td colspan="2" class="vclAlignRight">27,689.22 <small>€</small></td>
+            <td colspan="2" class="vclAlignRight">{{billTotal}} <small>€</small></td>
           </tr>
         </tbody>
       </table>
@@ -150,25 +150,25 @@
     <table class="vclNoBorder" style="min-width: 18em;">
       <tr>
         <td><b>Bank</b></td>
-        <td class="vclAlignRight">Deutsche Bank AG</td>
+        <td class="vclAlignRight">{{accountBank}}</td>
       </tr>
       <tr>
         <td><b>IBAN</b></td>
-        <td class="vclAlignRight">DE60200700000000000000</td>
+        <td class="vclAlignRight">{{accountIban}}</td>
       </tr>
       <tr>
         <td><b>BIC</b></td>
-        <td class="vclAlignRight">DEUTDEXXXXX</td>
+        <td class="vclAlignRight">{{accountBic}}</td>
       </tr>
       <tr>
         <td><b>Purpose</b></td>
-        <td class="vclAlignRight">2017110800169</td>
+        <td class="vclAlignRight">{{accountPurpose}}</td>
       </tr>
     </table>
     </p>
     <br>
     <p class="terms">
-    Terms, terms, terms.
+    {{saleTerms}}
     </p>
     <footer class="footer">
       <div class="vclFloatLeft vclScale85p" style="width: 33%;">
