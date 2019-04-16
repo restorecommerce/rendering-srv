@@ -264,21 +264,45 @@ describe('rendering srv testing', () => {
     });
 
     it('Should render CSS inline on complex template', async () => {
-      const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
-
       const root = cfg.get('templates:root');
       const templates = cfg.get('templates:message_with_inline_css');
       const bodyTpl = fs.readFileSync(root + templates.body).toString();
+      const layoutTpl = fs.readFileSync(root + templates.layout).toString();
       const msg = 'Hello World!';
 
-      const stylesPath = templates.style;
-      const style = fs.readFileSync(root + stylesPath).toString();
-      const renderer = new Renderer(bodyTpl, '', style, {});
-      const rendered = renderer.render({ msg });
-      validate = () => {
-        should.exist(rendered);
-        rendered.split('style').length.should.equal(128);
+      const renderRequest = {
+        id: 'test-complex-css',
+        payload: [{
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg }),
+          content_type: TEXT_CONTENT_TYPE
+        },
+        // rendering two exactly equal templates
+        {
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+          data: marshall({ msg }),
+          content_type: TEXT_CONTENT_TYPE
+        }]
       };
+
+      const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
+      validate = () => {
+        should.exist(responseID);
+        should.exist(response);
+        responseID.should.equal('test-complex-css');
+        response.length.should.equal(2);
+        response.forEach(element => {
+          const obj = unmarshall(element);
+          obj.should.be.json;
+          obj.should.hasOwnProperty('message');
+          const message = obj.message;
+          message.should.equal(renderer.render({ msg }));
+        });
+      };
+
+      const offset = await topic.$offset(-1) + 1;
+      await topic.emit('renderRequest', renderRequest);
+      await topic.$wait(offset);
     });
   });
 });
