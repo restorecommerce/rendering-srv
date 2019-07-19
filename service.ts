@@ -5,7 +5,7 @@ import * as cheerio from 'cheerio';
 import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import * as Logger from '@restorecommerce/logger';
+import { Logger } from '@restorecommerce/logger';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
 // gRPC / command-interface
@@ -20,14 +20,14 @@ enum Strategy {
 }
 
 export class Service {
-  logger: Logger;
+  logger: chassis.Logger;
   cfg: any;
   events: Events;
   topics: any;
   server: chassis.Server;
   commandService: chassis.ICommandInterface;
   offsetStore: chassis.OffsetStore;
-  constructor(cfg: any, logger: Logger) {
+  constructor(cfg: any, logger: chassis.Logger) {
     this.cfg = cfg;
     this.logger = logger;
 
@@ -206,7 +206,7 @@ export class Worker {
   /**
   * starting/stopping the actual server
   */
-  async start(cfg?: any, logger?: Logger): Promise<any> {
+  async start(cfg?: any, logger?: chassis.Logger): Promise<any> {
     if (!cfg) {
       cfg = sconfig(process.cwd());
       logger = new Logger(cfg.get('logger'));

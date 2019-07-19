@@ -5,7 +5,7 @@ import * as should from 'should';
 
 import * as fs from 'fs';
 import * as http from 'http';
-import * as Logger from '@restorecommerce/logger';
+import { Logger } from '@restorecommerce/logger';
 import * as path from 'path';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
@@ -325,9 +325,10 @@ describe('rendering srv testing', () => {
             livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
             item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
             subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
-            accountPurpose, saleTerms}),
-            style: stylesUrl,
-            content_type: 'application/html'
+            accountPurpose, saleTerms
+          }),
+          style: stylesUrl,
+          content_type: 'application/html'
         },
         // rendering two exactly equal templates
         {
