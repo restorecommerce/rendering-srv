@@ -77,7 +77,14 @@ This service uses [chassis-srv](http://github.com/restorecommerce/chassis-srv), 
 
 ### Tests
 
-See [tests](https://github.com/restorecommerce/rendering-srv/tree/master/test).
+See [tests](test/). To execute the tests a running instance of [Kafka](https://kafka.apache.org/) and [Redis](https://redis.io/) are needed.
+Refer to [System](https://github.com/restorecommerce/system) repository to start the backing-services before running the tests.
+
+- To run tests
+
+```sh
+npm run test
+```
 
 
 ## Usage
