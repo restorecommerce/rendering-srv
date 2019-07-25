@@ -1,7 +1,7 @@
 language: node_js
 sudo: required
 node_js:
-    - "9.2.0"
+    - "12.2.0"
 git:
   depth: 10
 services:
@@ -13,16 +13,14 @@ before_install:
   - 'npm install -g tslint'
   - 'npm config set loglevel error'
   - docker network create --driver bridge rendering_net
-  - docker run --name rendering_zk -d --net=rendering_net -p 2181:2181 wurstmeister/zookeeper
-  - docker run --name rendering_kafka -d --net=rendering_net -p 9092:9092 -e KAFKA_ADVERTISED_HOST_NAME=127.0.0.1 -e KAFKA_ZOOKEEPER_CONNECT=zk:2181 -v /var/run/docker.sock:/var/run/docker.sock --link rendering_zk:zk wurstmeister/kafka:1.0.0
-  - docker run --name rendering_redis -d --net=rendering_net -p 127.0.0.1:6379:6379  redis:4.0.6-alpine
+  - docker run --name rendering_zk -d --net=rendering_net -p 2181:2181 zookeeper:3.5.5
+  - docker run --name rendering_kafka -d --net=rendering_net -p 9092:9092 -e KAFKA_ADVERTISED_HOST_NAME=127.0.0.1 -e KAFKA_ZOOKEEPER_CONNECT=zk:2181 -v /var/run/docker.sock:/var/run/docker.sock --link rendering_zk:zk wurstmeister/kafka:2.11-2.0.0
+  - docker run --name rendering_redis -d --net=rendering_net -p 127.0.0.1:6379:6379  redis:5.0.rc-alpine
   - sleep 10
   - docker ps -a
   - docker logs rendering_zk
   - docker logs rendering_kafka
   - docker logs rendering_redis
-scripts:
-  - 'npm test'
 after_success:
-  - sleep 30
-  - npm run coveralls
+  - 'npm run coveralls'
+  - 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
