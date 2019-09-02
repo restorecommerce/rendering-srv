@@ -1,5 +1,11 @@
 *.d.ts
 node_modules/
+*.log
+coverage/
 *.js
 !setupTopics.js
 ./test/*.js
+.project
+.settings
+.directory
+.nyc_output
