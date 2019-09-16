@@ -111,7 +111,7 @@ export class Service {
             }
 
             // Modify to handle style for each template -> style
-            let style = payload.style;
+            let style = payload.style_url;
             if (style) {
               const tplResponse = await fetch(style, {});
               if (!tplResponse.ok) {

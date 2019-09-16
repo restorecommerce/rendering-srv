@@ -46,7 +46,7 @@ List of events emitted to Kafka by this microservice for below topics:
 | templates | string | required | JSON mapping labels to body and layout templates |
 | data | string | required | JSON mapping content to render output |
 | content_type | string | required | content type for rendering ex: 'application/html' or 'application/text' |
-| style | string | optional | A URL pointing to a stylesheet |
+| style_url | string | optional | A URL pointing to a stylesheet |
 | strategy | enum | optional | Strategy to use for applying the stylesheet. Possible values are `INLINE` and `COPY`|
 
 

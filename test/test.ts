@@ -192,7 +192,7 @@ describe('rendering srv testing', () => {
         payload: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({ msg }),
-          style: stylesUrl,
+          style_url: stylesUrl,
           content_type: CSS_CONTENT_TYPE
         }]
       };
@@ -327,7 +327,7 @@ describe('rendering srv testing', () => {
             subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
             accountPurpose, saleTerms
           }),
-          style: stylesUrl,
+          style_url: stylesUrl,
           content_type: 'application/html'
         },
         // rendering two exactly equal templates
@@ -341,7 +341,7 @@ describe('rendering srv testing', () => {
             subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
             accountPurpose, saleTerms
           }),
-          style: stylesUrl,
+          style_url: stylesUrl,
           content_type: 'application/html'
         }]
       };
