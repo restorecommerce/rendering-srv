@@ -83,7 +83,8 @@ export class Service {
         const request = msg;
         const id: string = request.id;
         if (!request || !request.payload || request.payload.length == 0) {
-          response.push('Missing payload');
+          const error = { error: 'Missing payload' };
+          response.push(that.marshallProtobufAny(error));
         } else {
 
           const payloads = request.payload;
@@ -102,29 +103,34 @@ export class Service {
             const renderingStrategy = payload.strategy || Strategy.INLINE;
             if (!templates || _.keys(templates).length == 0) {
               const error = { error: 'Missing templates' };
-              response.push(error);
+              response.push(that.marshallProtobufAny(error));
             }
 
             if (!data || _.keys(data).length == 0) {
               const error = { error: 'Missing data' };
-              response.push(error);
+              response.push(that.marshallProtobufAny(error));
             }
 
             // Modify to handle style for each template -> style
             let style = payload.style_url;
-            if (style) {
-              const tplResponse = await fetch(style, {});
-              if (!tplResponse.ok) {
-                this.logger.info('Could not retrieve CSS file from provided URL');
-              } else {
-                style = await tplResponse.text();
+            try {
+              if (style) {
+                const tplResponse = await fetch(style, {});
+                if (!tplResponse.ok) {
+                  that.logger.info('Could not retrieve CSS file from provided URL');
+                } else {
+                  style = await tplResponse.text();
+                }
               }
+            } catch (err) {
+              that.logger.info('Error occured when retreiving style sheet');
+              response.push(that.marshallProtobufAny(err.message));
             }
 
             // read the input content type
             const contType = payload.content_type;
             if (!contType) {
-              response.push('Missing content-type');
+              response.push(that.marshallProtobufAny('Missing content-type'));
             }
 
             const responseObj = {};
@@ -155,8 +161,9 @@ export class Service {
                 Object.assign(responseObj, { content_type: contType });
               }
             }
-
-            response.push(that.marshallProtobufAny(responseObj));
+            if (!_.isEmpty(responseObj)) {
+              response.push(that.marshallProtobufAny(responseObj));
+            }
           }
         }
         await that.reply(id, response);

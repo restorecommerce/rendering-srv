@@ -80,17 +80,19 @@ describe('rendering srv testing', () => {
     after(async function stop(): Promise<void> {
       await events.stop();
     });
-    it('should return empty response if request payload is empty', async () => {
+    it('should return missing payload response if request payload is empty', async () => {
       let renderRequest = {
         id: 'test-empty',
         payload: []
       };
       validate = () => {
+        const responseObject = { error: 'Missing payload' };
         should.exist(responseID);
         should.exist(response);
         responseID.should.equal('test-empty');
         response.length.should.equal(1);
-        response[0].should.be.empty();
+        const responseStr = JSON.stringify(unmarshall(response[0]));
+        responseStr.should.equal(JSON.stringify(responseObject));
       };
       const offset = await topic.$offset(-1) + 1;
       await topic.emit('renderRequest', renderRequest);
@@ -218,6 +220,49 @@ describe('rendering srv testing', () => {
       await topic.$wait(offset);
 
       httpServer.close();
+    });
+
+    it('should render without css for missing stylesheet', async () => {
+
+      const root = cfg.get('templates:root');
+      const templates = cfg.get('templates:message_with_style');
+      const bodyTpl = fs.readFileSync(root + templates.body).toString();
+      const layoutTpl = fs.readFileSync(root + templates.layout).toString();
+      const stylesUrl = 'http://invalidURL/main.css';
+
+      const msg = 'Hello World!';
+
+      const renderRequest = {
+        id: 'test-style',
+        payload: [{
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
+          data: marshall({ msg }),
+          style_url: stylesUrl,
+          content_type: CSS_CONTENT_TYPE
+        }]
+      };
+
+      const stylesPath = templates.style;
+      const style = fs.readFileSync(root + stylesPath).toString();
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
+
+      validate = () => {
+        should.exist(responseID);
+        should.exist(response);
+        responseID.should.equal('test-style');
+        response.length.should.equal(2);
+        response[0].should.be.json;
+        response[1].should.be.json;
+        const response_0 = unmarshall(response[0]);
+        const response_1 = unmarshall(response[1]);
+        response_0.should.equal('request to http://invalidurl/main.css failed, reason: getaddrinfo ENOTFOUND invalidurl');
+        response_1.should.hasOwnProperty('message');
+        const message = response_1.message;
+        message.should.equal('<div>\n    <p>My test message: Hello World!</p>\n</div>\n');
+      };
+      const offset = await topic.$offset(-1) + 1;
+      await topic.emit('renderRequest', renderRequest);
+      await topic.$wait(offset);
     });
 
     it('should render multiple templates', async () => {
