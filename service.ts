@@ -124,13 +124,13 @@ export class Service {
               }
             } catch (err) {
               that.logger.info('Error occured when retreiving style sheet');
-              response.push(that.marshallProtobufAny(err.message));
+              response.push(that.marshallProtobufAny({ error: err.message }));
             }
 
             // read the input content type
             const contType = payload.content_type;
             if (!contType) {
-              response.push(that.marshallProtobufAny('Missing content-type'));
+              response.push(that.marshallProtobufAny({ error: 'Missing content-type' }));
             }
 
             const responseObj = {};

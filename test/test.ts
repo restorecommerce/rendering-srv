@@ -255,7 +255,12 @@ describe('rendering srv testing', () => {
         response[1].should.be.json;
         const response_0 = unmarshall(response[0]);
         const response_1 = unmarshall(response[1]);
-        response_0.should.equal('request to http://invalidurl/main.css failed, reason: getaddrinfo ENOTFOUND invalidurl');
+        const expectedObj = {
+          error: 'request to http://invalidurl/main.css ' +
+            'failed, reason: getaddrinfo ENOTFOUND ' +
+            'invalidurl'
+        };
+        JSON.stringify(response_0).should.equal(JSON.stringify(expectedObj));
         response_1.should.hasOwnProperty('message');
         const message = response_1.message;
         message.should.equal('<div>\n    <p>My test message: Hello World!</p>\n</div>\n');
