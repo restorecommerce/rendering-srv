@@ -27,14 +27,22 @@
           "io/restorecommerce/rendering.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "messageObject": "io.restorecommerce.rendering.RenderRequest"
+        "messageObject": "io.restorecommerce.rendering.RenderRequest",
+        "bufferFields": [
+         { "payload" : ["templates", "data", "options" ] }
+        ],
+        "enableLogging": false
       },
       "renderResponse": {
         "protos": [
           "io/restorecommerce/rendering.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "messageObject": "io.restorecommerce.rendering.RenderResponse"
+        "messageObject": "io.restorecommerce.rendering.RenderResponse",
+        "bufferFields": [
+          "response"
+        ],
+        "enableLogging": false
       },
       "topics": {
         "rendering": {
@@ -71,7 +79,7 @@
     }
   },
   "static_server": {
-    "prefix":"http://localhost",
+    "prefix": "http://localhost",
     "port": 8088
   },
   "server": {
