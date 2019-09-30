@@ -16,6 +16,7 @@
   "dependencies": {
     "@restorecommerce/chassis-srv": "github:restorecommerce/chassis-srv",
     "@restorecommerce/cluster-service": "^0.1.4",
+    "@restorecommerce/grpc-client": "github:restorecommerce/grpc-client",
     "@restorecommerce/handlebars-helperized": "^0.1.3",
     "@restorecommerce/kafka-client": "^0.1.3",
     "@restorecommerce/logger": "^0.1.10",
@@ -51,7 +52,8 @@
     "tsctests": "tsc -d -p tsconfig.test.json",
     "build:tsc": "tsc -d",
     "build:clean": "rimraf service.js start.js",
-    "build": "npm-run-all lint build:clean build:tsc"
+    "build": "npm-run-all lint build:clean build:tsc",
+    "healthcheck": "node healthcheck.js"
   },
   "engines": {
     "node": ">= 9.2.0"

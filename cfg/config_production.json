@@ -20,7 +20,8 @@
     "transports": [
       {
         "name": "grpcRendering",
-         "services": {
+        "provider": "grpc",
+        "services": {
           "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service",
           "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection"
         },

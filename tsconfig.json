@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "start.ts", "./service.ts"
+    "start.ts", "./service.ts", "healthcheck.ts"
   ],
   "exclude": [
     "node_modules",
