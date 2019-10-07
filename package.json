@@ -16,7 +16,7 @@
   "dependencies": {
     "@restorecommerce/chassis-srv": "github:restorecommerce/chassis-srv",
     "@restorecommerce/cluster-service": "^0.1.4",
-    "@restorecommerce/grpc-client": "github:restorecommerce/grpc-client",
+    "@restorecommerce/grpc-client": "^0.0.1",
     "@restorecommerce/handlebars-helperized": "^0.1.3",
     "@restorecommerce/kafka-client": "^0.1.5",
     "@restorecommerce/logger": "^0.1.11",
@@ -41,7 +41,7 @@
   "scripts": {
     "start": "npm run createtopics && node start.js",
     "dev": "cross-env NODE_ENV=development npm run createtopics && nodemon start.js --trace-warnings",
-    "pretest": "npm run tsctests && npm run createtopics",
+    "pretest": "npm run build && npm run tsctests && npm run createtopics",
     "test": "npm run lint && nyc npm run mocha",
     "lint": "tslint ./lib/*.ts ./test*.ts ./service.ts ./start.ts",
     "mocha": "cross-env NODE_ENV=test mocha --timeout 60000 ./test/test.js --stack-trace --exit",
