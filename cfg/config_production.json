@@ -3,7 +3,7 @@
     "elasticsearch": {
       "level": "error",
       "clientOpts": {
-        "host": "elasticsearch:9200"
+        "node": "http://elasticsearch:9200"
       },
       "source": "rendering-srv"
     }
