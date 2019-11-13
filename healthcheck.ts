@@ -40,15 +40,15 @@ Object.keys(grpcConfig['services']).forEach((service) => {
             resolve();
           }
         } else {
-          logger.error('ERROR!', realValue);
+          logger.error('Unexpected health_check response:', realValue);
           reject();
         }
       } else {
-        logger.error('ERROR!', response);
+        logger.error('Unexpected health_check response:', response);
         reject();
       }
     } catch (e) {
-      logger.error('ERROR!', e);
+      logger.error('Failed fetching health_check:', e);
       reject();
     }
   }));
