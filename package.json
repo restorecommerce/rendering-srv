@@ -2,7 +2,7 @@
   "name": "@restorecommerce/rendering-srv",
   "version": "0.0.1",
   "description": "Handlebars-HTML rendering microservice",
-  "main": "index.js",
+  "main": "lib/start.js",
   "author": "Invend GmbH",
   "repository": {
     "type": "git",
@@ -22,14 +22,22 @@
     "@restorecommerce/logger": "^0.1.12",
     "@restorecommerce/protos": "github:restorecommerce/protos",
     "@restorecommerce/service-config": "^0.1.6",
+    "arg": "^4.1.2",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.14",
     "node-fetch": "^2.6.0",
+    "ts-node": "^8.5.4",
     "tslint": "^5.20.1"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.11",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
     "cross-env": "^6.0.3",
+    "eslint": "^6.7.0",
+    "eslint-plugin-prefer-arrow-functions": "^3.0.1",
     "mocha": "^6.2.2",
     "nodemon": "^2.0.1",
     "npm-run-all": "^4.1.5",
@@ -39,11 +47,11 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "start": "npm run createtopics && node start.js",
-    "dev": "cross-env NODE_ENV=development npm run createtopics && nodemon start.js --trace-warnings",
+    "start": "npm run createtopics && node lib/start.js",
+    "dev": "cross-env NODE_ENV=development npm run createtopics && nodemon --watch './src/**/*.ts' --exec 'ts-node' src/start.ts",
     "pretest": "npm run build && npm run tsctests && npm run createtopics",
     "test": "npm run lint && nyc npm run mocha",
-    "lint": "tslint ./lib/*.ts ./test*.ts ./service.ts ./start.ts",
+    "lint": "eslint src --ext .ts",
     "mocha": "cross-env NODE_ENV=test mocha --timeout 60000 ./test/test.js --stack-trace --exit",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "createtopics": "node setupTopics.js io.restorecommerce.rendering",
@@ -51,9 +59,9 @@
     "test-prod-env": "cross-env NODE_ENV=prod mocha",
     "tsctests": "tsc -d -p tsconfig.test.json",
     "build:tsc": "tsc -d",
-    "build:clean": "rimraf service.js start.js",
+    "build:clean": "rimraf lib",
     "build": "npm-run-all lint build:clean build:tsc",
-    "healthcheck": "node healthcheck.js"
+    "healthcheck": "node lib/healthcheck.js"
   },
   "engines": {
     "node": ">= 9.2.0"

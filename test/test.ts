@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Worker } from './../service';
+import { Worker } from '../lib/service';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';

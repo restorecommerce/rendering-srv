@@ -37,7 +37,7 @@ export class Service {
     this.server = new chassis.Server(cfg.get('server'), logger);
   }
 
-  /**
+  /*
    * start the server
    */
   async start(): Promise<any> {
@@ -76,7 +76,7 @@ export class Service {
     await this.events.start();
     this.offsetStore = new chassis.OffsetStore(this.events, this.cfg, this.logger);
     const that = this;
-    const listener = async function (msg: any, context: any, config: any, eventName: string): Promise<any> {
+    const listener = async (msg: any, context: any, config: any, eventName: string): Promise<any> => {
       const response = [];
       if (eventName == RENDER_REQ_EVENT) {
         that.logger.info('Rendering request received');
