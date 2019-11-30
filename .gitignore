@@ -1,11 +1,15 @@
 *.d.ts
 *.js
 *.log
+
 ./test/*.js
 .directory
 .nyc_output
 .project
 .settings
+
 !setupTopics.js
+
 coverage/
+lib/
 node_modules/
