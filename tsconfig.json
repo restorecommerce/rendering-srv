@@ -15,14 +15,10 @@
   },
   "include": [
     "./src/**/*.ts"
-
-
   ],
   "exclude": [
-    "**/*.test.ts",
     "doc",
     "lib",
-    "node_modules",
-	  "protos/typedefs"
+    "node_modules"
   ]
 }

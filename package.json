@@ -22,12 +22,9 @@
     "@restorecommerce/logger": "^0.1.12",
     "@restorecommerce/protos": "github:restorecommerce/protos",
     "@restorecommerce/service-config": "^0.1.6",
-    "arg": "^4.1.2",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.14",
-    "node-fetch": "^2.6.0",
-    "ts-node": "^8.5.4",
-    "tslint": "^5.20.1"
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
@@ -44,6 +41,7 @@
     "nyc": "^14.1.1",
     "rimraf": "^3.0.0",
     "should": "^13.2.3",
+    "ts-node": "^8.5.4",
     "typescript": "^3.7.2"
   },
   "scripts": {
