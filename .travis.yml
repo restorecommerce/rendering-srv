@@ -1,7 +1,7 @@
 language: node_js
 sudo: required
 node_js:
-  - "12.4.0"
+  - "12.14"
 git:
   depth: 10
 services:
@@ -14,7 +14,7 @@ before_install:
   - 'npm config set loglevel error'
   - docker network create --driver bridge rendering_net
   - docker run --name rendering_zk -d --net=rendering_net -p 2181:2181 zookeeper:3.5.5
-  - docker run --name rendering_kafka -d --net=rendering_net -p 9092:9092 -e KAFKA_ADVERTISED_HOST_NAME=127.0.0.1 -e KAFKA_ZOOKEEPER_CONNECT=zk:2181 -v /var/run/docker.sock:/var/run/docker.sock --link rendering_zk:zk wurstmeister/kafka:2.11-2.0.0
+  - docker run --name rendering_kafka -d --net=rendering_net -p 9092:9092 -e KAFKA_ADVERTISED_HOST_NAME=127.0.0.1 -e KAFKA_ZOOKEEPER_CONNECT=zk:2181 -v /var/run/docker.sock:/var/run/docker.sock --link rendering_zk:zk wurstmeister/kafka:2.12-2.4.0
   - docker run --name rendering_redis -d --net=rendering_net -p 127.0.0.1:6379:6379  redis:5.0.3-alpine
   - sleep 10
   - docker ps -a
