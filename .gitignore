@@ -1,16 +1,21 @@
 *.d.ts
 *.js
 *.log
-
 ./test/*.js
-.directory
-.nyc_output
-.project
-.settings
 
 !setupTopics.js
 !.eslintrc.js
 
+.directory
+.nyc_output/
+.project/
+.settings/
+
 coverage/
 lib/
 node_modules/
+
+id_rsa.pub
+config
+id_rsa
+known_hosts
