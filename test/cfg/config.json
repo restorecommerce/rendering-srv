@@ -20,7 +20,7 @@
       "provider": "kafka",
       "groupId": "rendering-srv",
       "clientId": "rendering-srv",
-      "kafkaHost": "localhost:9092",
+      "kafkaHost": "localhost:29092",
       "latestOffset": true,
       "renderRequest": {
         "protos": [

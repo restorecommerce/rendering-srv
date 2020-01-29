@@ -1,7 +1,6 @@
 # rendering-srv
-<img src="http://img.shields.io/npm/v/%40restorecommerce%2Frendering%2Dsrv.svg?style=flat-square" alt="">[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/rendering-srv?branch=master)
+[![Build Status][build]](https://travis-ci.org/restorecommerce/rendering-srv?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/rendering-srv)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/rendering-srv?branch=master)
 
-[version]: http://img.shields.io/npm/v/rendering-srv.svg?style=flat-square
 [build]: http://img.shields.io/travis/restorecommerce/rendering-srv/master.svg?style=flat-square
 [depend]: https://img.shields.io/david/restorecommerce/rendering-srv.svg?style=flat-square
 [cover]: http://img.shields.io/coveralls/restorecommerce/rendering-srv/master.svg?style=flat-square
@@ -13,23 +12,24 @@ This service is based on event-driven communication, using [kafka-client](https:
 
 ## Kafka Events
 
-This microservice subscribes to the following Kafka events by topic:
-- io.restorecommerce.rendering
-  - renderRequest
-- io.restorecommerce.command
-  - healthCheckCommand
+This microservice subscribes to the following events by topic:
 
-List of events emitted to Kafka by this microservice for below topics:
-- io.restorecommerce.rendering
-  - renderResponse
-  - renderResponse
-- io.restorecommerce.command
-  - healthCheckResponse
+| Topic Name | Event Name | Description |
+| ----------- | ------------ | ------------- |
+| `io.restorecommerce.rendering` | `renderRequest` | to receive render request |
+| `io.restorecommerce.command`   | `healthCheckCommand` | to get system health check |
+
+List of events emitted by this microservice for below topics:
+
+| Topic Name | Event Name | Description |
+| ----------- | ------------ | ------------- |
+| `io.restorecommerce.rendering` | `renderResponse` | emitted when request is rendered  |
+| `io.restorecommerce.command`   | `healthCheckResponse` | system health check response |
 
 
 ### Event Messages
 
-#### RenderRequest
+#### `RenderRequest`
 
 `io.restorecommerce.rendering.RenderRequest`
 
@@ -49,6 +49,7 @@ List of events emitted to Kafka by this microservice for below topics:
 | style_url | string | optional | A URL pointing to a stylesheet |
 | strategy | enum | optional | Strategy to use for applying the stylesheet. Possible values are `INLINE` and `COPY`|
 
+#### `RenderResponse`
 
 `io.restorecommerce.rendering.RenderResponse`
 
@@ -87,36 +88,39 @@ npm run test
 ```
 
 
-## Usage
+## Running as Docker Container
 
-### Development
+This service depends on a set of _backing services_ that can be started using a
+dedicated [docker compose definition](https://github.com/restorecommerce/system).
 
-- Install dependencies
+```sh
+docker run \
+ --name restorecommerce_rendering_srv \
+ --hostname rendering-srv \
+ --network=system_test \
+ -e NODE_ENV=production \
+ -p 50057:50057 \
+ restorecommerce/rendering-srv
+```
+
+## Running Locally
+
+Install dependencies
 
 ```sh
 npm install
 ```
 
-- Build application
+Build service
 
 ```sh
 # compile the code
 npm run build
 ```
 
-- Run application and restart it on changes in the code
+Start service
 
 ```sh
-# Start rendering-srv backend in dev mode
-npm run dev
-```
-
-### Production
-
-```sh
-# compile the code
-npm run build
-
-# run compiled server
+# run compiled service
 npm start
 ```
