@@ -14,13 +14,13 @@
     "rendering"
   ],
   "dependencies": {
-    "@restorecommerce/chassis-srv": "git+https://git@github.com/restorecommerce/chassis-srv.git",
+    "@restorecommerce/chassis-srv": "^0.0.1",
     "@restorecommerce/cluster-service": "^0.1.4",
-    "@restorecommerce/grpc-client": "0.0.4",
+    "@restorecommerce/grpc-client": "^0.0.5",
     "@restorecommerce/handlebars-helperized": "^0.1.7",
-    "@restorecommerce/kafka-client": "^0.1.7",
+    "@restorecommerce/kafka-client": "^0.1.8",
     "@restorecommerce/logger": "^0.1.12",
-    "@restorecommerce/protos": "git+https://git@github.com/restorecommerce/protos.git",
+    "@restorecommerce/protos": "^0.0.1",
     "@restorecommerce/service-config": "^0.1.6",
     "cheerio": "^1.0.0-rc.3",
     "lodash": "^4.17.14",
