@@ -1,4 +1,4 @@
-FROM node:12.6.1-stretch
+FROM node:12.16.1-stretch
 
 # Install dependencies
 RUN apt-get update && apt-get install -y libc6-dev
