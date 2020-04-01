@@ -151,9 +151,9 @@ export class Service {
               try {
                 rendered = tplRenderer.render(data);  // rendered HTML string
               } catch (err) {
-                this.logger.error('Error occured while rendering template:', template);
+                this.logger.error('Error while rendering template:', template);
                 this.logger.error('Error:', err);
-                response.push(that.marshallProtobufAny({ error: 'Error occurred while rendering template' }));
+                response.push(that.marshallProtobufAny({ error: 'Error while rendering template' }));
               }
               if (renderingStrategy == Strategy.COPY && style) {
                 const html = cheerio.load(rendered);
