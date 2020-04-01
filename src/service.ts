@@ -147,8 +147,14 @@ export class Service {
                 // do not inline!
                 tplRenderer = new Renderer(body, layout, null, options);
               }
-
-              let rendered = tplRenderer.render(data);  // rendered HTML string
+              let rendered;
+              try {
+                rendered = tplRenderer.render(data);  // rendered HTML string
+              } catch (err) {
+                this.logger.error('Error occured while rendering template:', template);
+                this.logger.error('Error:', err);
+                response.push(that.marshallProtobufAny({ error: 'Error occurred while rendering template' }));
+              }
               if (renderingStrategy == Strategy.COPY && style) {
                 const html = cheerio.load(rendered);
                 html('html').append('<style></style>');
@@ -156,7 +162,9 @@ export class Service {
                 html('style').append(style);
                 rendered = html.html();
               }
-              responseObj[key] = rendered;
+              if (rendered) {
+                responseObj[key] = rendered;
+              }
               if (contType) {
                 Object.assign(responseObj, { content_type: contType });
               }
