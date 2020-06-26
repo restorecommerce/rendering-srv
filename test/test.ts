@@ -257,10 +257,10 @@ describe('rendering srv testing', () => {
         const response_1 = unmarshall(response[1]);
         const expectedObj = {
           error: 'request to http://invalidurl/main.css ' +
-            'failed, reason: getaddrinfo EAI_AGAIN ' +
+            'failed, reason: getaddrinfo (EAI_AGAIN|ENOTFOUND) ' +
             'invalidurl'
         };
-        JSON.stringify(response_0).should.equal(JSON.stringify(expectedObj));
+        JSON.stringify(response_0).should.match(new RegExp(JSON.stringify(expectedObj)));
         response_1.should.hasOwnProperty('message');
         const message = response_1.message;
         message.should.equal('<div>\n    <p>My test message: Hello World!</p>\n</div>\n');
