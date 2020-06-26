@@ -257,7 +257,7 @@ describe('rendering srv testing', () => {
         const response_1 = unmarshall(response[1]);
         const expectedObj = {
           error: 'request to http://invalidurl/main.css ' +
-            'failed, reason: getaddrinfo ENOTFOUND ' +
+            'failed, reason: getaddrinfo EAI_AGAIN ' +
             'invalidurl'
         };
         JSON.stringify(response_0).should.equal(JSON.stringify(expectedObj));
