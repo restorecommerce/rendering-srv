@@ -1,0 +1,5 @@
+name: Rendering-srv
+title: Rendering Service
+version: master
+nav:
+  - modules/ROOT/nav.adoc
