@@ -17,7 +17,7 @@
     "@restorecommerce/chassis-srv": "^0.0.3",
     "@restorecommerce/cluster-service": "^0.1.4",
     "@restorecommerce/grpc-client": "^0.0.5",
-    "@restorecommerce/handlebars-helperized": "^0.1.7",
+    "@restorecommerce/handlebars-helperized": "^0.1.8",
     "@restorecommerce/kafka-client": "^0.1.8",
     "@restorecommerce/logger": "^0.1.16",
     "@restorecommerce/protos": "^0.0.4",
