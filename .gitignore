@@ -5,6 +5,7 @@
 
 !setupTopics.js
 !.eslintrc.js
+!handlebars/*.js
 
 .directory
 .nyc_output/
