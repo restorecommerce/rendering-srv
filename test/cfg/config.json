@@ -76,12 +76,6 @@
       "body": "test_message_body_inline_css.hbs",
       "layout": "test_message_layout_inline_css.hbs",
       "style": "css/test_message_body_inline_css.css"
-    },
-    "custom_helper_loud": {
-      "body": "custom_helper_loud.hbs"
-    },
-    "custom_helper_list": {
-      "body": "custom_helper_list.hbs"
     }
   },
   "static_server": {

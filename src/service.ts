@@ -10,18 +10,10 @@ import * as Renderer from '@restorecommerce/handlebars-helperized';
 import * as sconfig from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
-import * as fs from 'fs';
 
 const RENDER_REQ_EVENT = 'renderRequest';
 const HEALTH_CMD_EVENT = 'healthCheckCommand';
 const HEALTH_RES_EVENT = 'healthCheckResponse';
-
-// we store here the handlebars helpers
-const CURR_DIR = process.cwd();
-const REL_PATH_HANDLEBARS = '/handlebars/';
-const HANDLEBARS_DIR = './handlebars';
-let customHelpersList: string[] = [];
-
 enum Strategy {
   INLINE = 1,
   COPY = 2
@@ -49,13 +41,6 @@ export class Service {
    * start the server
    */
   async start(): Promise<any> {
-    // read all file names from the handlebars folder
-    let absolutePath: string;
-    fs.readdirSync(HANDLEBARS_DIR).forEach((file) => {
-      absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
-      customHelpersList.push(absolutePath);
-    });
-
     await this.subscribeTopics();
     this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger, this.events);
     const serviceNamesCfg = this.cfg.get('serviceNames');
@@ -138,7 +123,7 @@ export class Service {
                 }
               }
             } catch (err) {
-              that.logger.info('Error occurred while retrieving style sheet');
+              that.logger.info('Error occured when retreiving style sheet');
               response.push(that.marshallProtobufAny({ error: err.message }));
             }
 
@@ -157,10 +142,10 @@ export class Service {
 
               let tplRenderer;
               if (renderingStrategy == Strategy.INLINE) {
-                tplRenderer = new Renderer(body, layout, style, options, customHelpersList);
+                tplRenderer = new Renderer(body, layout, style, options);
               } else {
                 // do not inline!
-                tplRenderer = new Renderer(body, layout, null, options, customHelpersList);
+                tplRenderer = new Renderer(body, layout, null, options);
               }
               let rendered;
               try {
