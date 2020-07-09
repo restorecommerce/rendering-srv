@@ -10,6 +10,7 @@ A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebar
 == Features
 
 * Rendering is performed using https://github.com/restorecommerce/handlebars-helperized[handlebars-helperized], a module which has several custom helpers for handlebars.
+* User defined helpers for handlebars are loaded from the link:handlebars/[handlebars] folder on service startup.
 * Additionally, a stylesheet URL can be provided.
 
 [#events]
