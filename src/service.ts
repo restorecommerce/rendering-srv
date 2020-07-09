@@ -108,6 +108,8 @@ export class Service {
             const templates = that.unmarshallProtobufAny(payload.templates);
             const data = that.unmarshallProtobufAny(payload.data);
 
+            // options are the handlebar-helperized options that can be
+            // specified in the payload
             let options: any;
             if (!!payload.options && !_.isEmpty(payload.options) && !_.isEmpty(payload.options.value)) {
               options = that.unmarshallProtobufAny(payload.options);
