@@ -137,47 +137,6 @@ describe('rendering srv testing', () => {
       await topic.$wait(offset);
     });
 
-    it('should render a template using custom helper "loud"  ', async () => {
-      // template: <p>Hello {{ loud msg }}</p>
-      // input: { msg: "test" }
-      // output: <p>Hello TEST</p>
-      const path = cfg.get('templates:root') + cfg.get('templates:custom_helper_loud:body');
-      const msgTpl = fs.readFileSync(path).toString();
-      const msg = 'test';
-      const renderRequest = {
-        id: 'test-custom-helper-loud',
-        payload: [{
-          templates: marshall({
-            message: {
-              body: msgTpl
-            }
-          }),
-          data: marshall({
-            msg
-          }),
-          content_type: TEXT_CONTENT_TYPE
-        }]
-      };
-
-      const renderer = new Renderer(msgTpl, '', '', {}, );
-
-      validate = () => {
-        should.exist(responseID);
-        should.exist(response);
-        responseID.should.equal('test-custom-helper-loud');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        let obj = unmarshall(response[0]);
-        obj.should.hasOwnProperty('message');
-        let message = obj.message;
-        message.should.equal(renderer.render({ msg }));
-      };
-
-      const offset = await topic.$offset(-1) + 1;
-      await topic.emit('renderRequest', renderRequest);
-      await topic.$wait(offset);
-    });
-
     it('should render a template using custom helper "list"  ', async () => {
       // template:
       // {{#list people}}{{firstname}} {{lastname}}{{/list}}
