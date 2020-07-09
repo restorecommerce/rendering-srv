@@ -46,9 +46,7 @@ describe('rendering srv testing', () => {
   let responseID: string;
   let response: Array<any>;
   let topic: Topic;
-
   before(async function start(): Promise<void> {
-
     cfg = sconfig(process.cwd() + '/test');
     logger = new Logger(cfg.get('logger'));
 
@@ -166,7 +164,7 @@ describe('rendering srv testing', () => {
       // <li>Alan Johnson</li>
       // </ul>
 
-      const path = cfg.get('templates:root') + cfg.get('templates:test_helper_list:body');
+      const path = cfg.get('templates:root') + cfg.get('templates:custom_helper_list:body');
       const msgTpl = fs.readFileSync(path).toString();
       const people = [ { firstname: "John", lastname: "BonJovi" }, { firstname:"Lars", lastname:"Ulrich" } ];
       const renderRequest = {
@@ -309,6 +307,10 @@ describe('rendering srv testing', () => {
         }]
       };
 
+      const stylesPath = templates.style;
+      const style = fs.readFileSync(root + stylesPath).toString();
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
+
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -348,12 +350,12 @@ describe('rendering srv testing', () => {
           data: marshall({ msg }),
           content_type: TEXT_CONTENT_TYPE
         },
-        // rendering two exactly equal templates
-        {
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
-          data: marshall({ msg }),
-          content_type: TEXT_CONTENT_TYPE
-        }]
+          // rendering two exactly equal templates
+          {
+            templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+            data: marshall({ msg }),
+            content_type: TEXT_CONTENT_TYPE
+          }]
       };
 
       const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
@@ -443,20 +445,20 @@ describe('rendering srv testing', () => {
           style_url: stylesUrl,
           content_type: 'application/html'
         },
-        // rendering two exactly equal templates
-        {
-          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'application/html' } }),
-          data: marshall({
-            firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
-            paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
-            livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
-            item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
-            subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
-            accountPurpose, saleTerms
-          }),
-          style_url: stylesUrl,
-          content_type: 'application/html'
-        }]
+          // rendering two exactly equal templates
+          {
+            templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'application/html' } }),
+            data: marshall({
+              firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
+              paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
+              livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
+              item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
+              subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
+              accountPurpose, saleTerms
+            }),
+            style_url: stylesUrl,
+            content_type: 'application/html'
+          }]
       };
 
       const stylesPath = templates.style;
