@@ -3,16 +3,3 @@ module.exports = function loudHandlebarsExtensions(hbs, opts) {
     return aString.toUpperCase()
   });
 };
-
-// template:
-// {{firstname}} {{loud lastname}}
-
-// input:
-// {
-//   firstname: "Yehuda",
-//   lastname: "Katz",
-// }
-
-// output:
-// Yehuda KATZ
-

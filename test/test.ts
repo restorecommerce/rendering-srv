@@ -181,7 +181,6 @@ describe('rendering srv testing', () => {
     it('should render a template using custom helper "list"  ', async () => {
       // template:
       // {{#list people}}{{firstname}} {{lastname}}{{/list}}
-
       // input:
       // {
       //   people: [
@@ -199,7 +198,6 @@ describe('rendering srv testing', () => {
       //     },
       //   ],
       // }
-
       // output:
       // <ul>
       // <li>Yehuda Katz</li>
