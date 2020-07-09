@@ -46,6 +46,7 @@ describe('rendering srv testing', () => {
   let responseID: string;
   let response: Array<any>;
   let topic: Topic;
+
   before(async function start(): Promise<void> {
 
     cfg = sconfig(process.cwd() + '/test');
@@ -80,6 +81,7 @@ describe('rendering srv testing', () => {
     after(async function stop(): Promise<void> {
       await events.stop();
     });
+
     it('should return missing payload response if request payload is empty', async () => {
       let renderRequest = {
         id: 'test-empty',
@@ -136,6 +138,71 @@ describe('rendering srv testing', () => {
       await topic.emit('renderRequest', renderRequest);
       await topic.$wait(offset);
     });
+
+    it('should render a template using custom helper "list"  ', async () => {
+      // template:
+      // {{#list people}}{{firstname}} {{lastname}}{{/list}}
+      // input:
+      // {
+      //   people: [
+      //     {
+      //       firstname: "Yehuda",
+      //       lastname: "Katz",
+      //     },
+      //     {
+      //       firstname: "Carl",
+      //       lastname: "Lerche",
+      //     },
+      //     {
+      //       firstname: "Alan",
+      //       lastname: "Johnson",
+      //     },
+      //   ],
+      // }
+      // output:
+      // <ul>
+      // <li>Yehuda Katz</li>
+      // <li>Carl Lerche</li>
+      // <li>Alan Johnson</li>
+      // </ul>
+
+      const path = cfg.get('templates:root') + cfg.get('templates:test_helper_list:body');
+      const msgTpl = fs.readFileSync(path).toString();
+      const people = [ { firstname: "John", lastname: "BonJovi" }, { firstname:"Lars", lastname:"Ulrich" } ];
+      const renderRequest = {
+        id: 'test-custom-helper-list',
+        payload: [{
+          templates: marshall({
+            message: {
+              body: msgTpl
+            }
+          }),
+          data: marshall({
+            people
+          }),
+          content_type: TEXT_CONTENT_TYPE
+        }]
+      };
+
+      const renderer = new Renderer(msgTpl, '', '', {}, );
+
+      validate = () => {
+        should.exist(responseID);
+        should.exist(response);
+        responseID.should.equal('test-custom-helper-list');
+        response.length.should.equal(1);
+        response[0].should.be.json;
+        let obj = unmarshall(response[0]);
+        obj.should.hasOwnProperty('message');
+        let message = obj.message;
+        message.should.equal(renderer.render({ people }));
+      };
+
+      const offset = await topic.$offset(-1) + 1;
+      await topic.emit('renderRequest', renderRequest);
+      await topic.$wait(offset);
+    });
+
 
     it('should render with layout', async () => {
       const root = cfg.get('templates:root');
@@ -241,10 +308,6 @@ describe('rendering srv testing', () => {
           content_type: CSS_CONTENT_TYPE
         }]
       };
-
-      const stylesPath = templates.style;
-      const style = fs.readFileSync(root + stylesPath).toString();
-      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
 
       validate = () => {
         should.exist(responseID);

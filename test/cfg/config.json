@@ -76,6 +76,9 @@
       "body": "test_message_body_inline_css.hbs",
       "layout": "test_message_layout_inline_css.hbs",
       "style": "css/test_message_body_inline_css.css"
+    },
+    "test_helper_list": {
+      "body": "test_helper_list.hbs"
     }
   },
   "static_server": {
