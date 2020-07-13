@@ -4,13 +4,15 @@ https://travis-ci.org/restorecommerce/rendering-srv?branch=master[image:http://i
 https://david-dm.org/restorecommerce/rendering-srv[image:https://img.shields.io/david/restorecommerce/rendering-srv.svg?style=flat-square[Dependencies]]
 https://coveralls.io/github/restorecommerce/rendering-srv?branch=master[image:http://img.shields.io/coveralls/restorecommerce/rendering-srv/master.svg?style=flat-square[Cover]]
 
-A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebars] templates.
+A microservice for rendering HTML output from link:http://handlebarsjs.com/[Handlebars] templates.
 
 [#features]
 == Features
 
-* Rendering is performed using https://github.com/restorecommerce/handlebars-helperized[handlebars-helperized], a module which has several custom helpers for handlebars.
-* User defined helpers for handlebars are loaded from the link:../../../../handlebars/[handlebars] folder on service startup.
+* Rendering is performed using link:https://github.com/restorecommerce/handlebars-helperized[handlebars-helperized],
+a module which has several custom helpers for handlebars.
+* User defined helpers for handlebars are loaded from the
+link:https://github.com/restorecommerce/rendering-srv/tree/master/handlebars[handlebars] folder on service startup.
 * Additionally, a stylesheet URL can be provided.
 
 [#events]
