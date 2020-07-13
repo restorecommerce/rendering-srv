@@ -42,10 +42,10 @@ This microservice subscribes to the following events by topic:
 |======================================================================================================================================
 
 [#event_messages]
-==== Event Messages
+=== Event Messages
 
 [#event_messages_render_request]
-===== `RenderRequest`
+==== `RenderRequest`
 
 `io.restorecommerce.rendering.RenderRequest`
 
@@ -70,7 +70,7 @@ This microservice subscribes to the following events by topic:
 |======================================================================================================================================
 
 [#event_messages_render_response]
-===== `RenderResponse`
+==== `RenderResponse`
 
 `io.restorecommerce.rendering.RenderResponse`
 

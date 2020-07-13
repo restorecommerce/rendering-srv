@@ -8,6 +8,7 @@
 !handlebars/*.js
 
 .directory
+.idea
 .nyc_output/
 .project/
 .settings/
