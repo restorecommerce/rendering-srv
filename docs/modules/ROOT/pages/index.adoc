@@ -31,10 +31,10 @@ List of events emitted by this microservice for below topics:
 |======================================================================================================================================
 
 
-[#subscribed-events]
-=== Subscribed
+[#consumed-events]
+=== Consumed
 
-This microservice subscribes to the following events by topic:
+This microservice consumes messages for the following events by topic:
 
 [width="100%",cols="31%,33%,36%",options="header",]
 |======================================================================================================================================

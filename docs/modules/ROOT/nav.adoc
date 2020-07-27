@@ -7,7 +7,7 @@
 // EVENTS
 * xref:index.adoc#events[Events]
 ** xref:index.adoc#emitted-events[Emitted]
-** xref:index.adoc#subscribed-events[Subscribed]
+** xref:index.adoc#consumed-events[Consumed]
 ** xref:index.adoc#event_messages[Event Messages]
 *** xref:index.adoc#event_messages_render_request[`RenderRequest`]
 *** xref:index.adoc#event_messages_render_response[`RenderResponse`]
