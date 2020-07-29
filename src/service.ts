@@ -11,6 +11,7 @@ import * as sconfig from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
+import { createClient } from 'redis';
 
 const RENDER_REQ_EVENT = 'renderRequest';
 const HEALTH_CMD_EVENT = 'healthCheckCommand';
@@ -57,7 +58,11 @@ export class Service {
     });
 
     await this.subscribeTopics();
-    this.commandService = new chassis.CommandInterface(this.server, this.cfg.get(), this.logger, this.events);
+    // init redis client for subject index
+    const redisConfig = this.cfg.get('redis');
+    redisConfig.db = this.cfg.get('redis:db-indexes:db-subject');
+    const redisClient = createClient(redisConfig);
+    this.commandService = new chassis.CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await this.server.bind(serviceNamesCfg.cis, this.commandService);
 
