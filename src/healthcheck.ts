@@ -5,6 +5,21 @@ import {grpcClient} from '@restorecommerce/grpc-client';
 const cfg = sconfig(process.cwd());
 const logger = new Logger(cfg.get('logger'));
 
+setTimeout(() => {
+  logger.error('Healthcheck timed out!');
+  process.exit(2);
+}, 60000);
+
+process.on('uncaughtException', (error)  => {
+  logger.error('Uncaught Exception: ', {error});
+  process.exit(3);
+});
+
+process.on('unhandledRejection', (error, promise) => {
+  logger.error('Unhandled rejected promise: ', {promise, error});
+  process.exit(4);
+});
+
 const grpcConfig = cfg.get('server:transports')[0];
 
 grpcConfig['service'] = grpcConfig['services'][cfg.get('serviceNames:cis')];
@@ -54,9 +69,18 @@ Object.keys(grpcConfig['services']).forEach((service) => {
   }));
 });
 
-// Force exit as sometimes there is a hanging thread
-Promise.all(requests).catch(() => {
-  process.exit(1);
-}).then(() => {
-  process.exit(0);
-});
+(async () => {
+  let errored = false;
+
+  // Force exit as sometimes there is a hanging thread
+  await Promise.allSettled(requests).then((results) => {
+    results.forEach(result => {
+      if (result.status === 'rejected') {
+        errored = true;
+      }
+    });
+  });
+
+  process.exit(errored ? 1 : 0);
+})();
+
