@@ -1,7 +1,7 @@
 language: node_js
 sudo: required
 node_js:
-  - "12.14"
+  - "12.18.3"
 git:
   depth: 10
 services:
