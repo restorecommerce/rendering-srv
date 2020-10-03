@@ -1,3 +1,7 @@
+### 0.1.3 (October 3rd, 2020)
+
+- updated restructured protos
+
 ### 0.1.2 (Auguest 27th, 2020)
 
 - healthcheck fix, updated dependencies
