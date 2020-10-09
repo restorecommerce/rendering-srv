@@ -2,7 +2,7 @@
 
 ### Base
 FROM node:12.18.3-alpine as base
-
+ENV NO_UPDATE_NOTIFIER=true
 RUN --mount=type=cache,uid=1000,gid=1000,target=/home/node/.npm npm install -g typescript@3.4.1
 
 USER node
