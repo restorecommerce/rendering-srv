@@ -1,3 +1,7 @@
+### 0.1.4 (October 9th, 2020)
+
+- updated Dockerfile with NO_UPDATE_NOTIFIER environment variable
+
 ### 0.1.3 (October 3rd, 2020)
 
 - updated restructured protos
