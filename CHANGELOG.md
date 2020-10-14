@@ -1,3 +1,8 @@
+### 0.1.5 (October 14th, 2020)
+
+- add new grpc healthcheck with readiness probe
+- listen on 0.0.0.0 for grpc port
+
 ### 0.1.4 (October 9th, 2020)
 
 - updated Dockerfile with NO_UPDATE_NOTIFIER environment variable

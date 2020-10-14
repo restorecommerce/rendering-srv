@@ -34,7 +34,7 @@ export class Service {
   events: Events;
   topics: any;
   server: chassis.Server;
-  commandService: chassis.ICommandInterface;
+  commandService: chassis.CommandInterface;
   offsetStore: chassis.OffsetStore;
   constructor(cfg: any, logger: chassis.Logger) {
     this.cfg = cfg;
@@ -72,6 +72,10 @@ export class Service {
     const transport = this.server.transport[transportName];
     const reflectionService = new chassis.ServerReflection(transport.$builder, this.server.config);
     await this.server.bind(reflectionServiceName, reflectionService);
+
+    await this.server.bind(serviceNamesCfg.health, new chassis.Health(this.commandService, async () => {
+      return redisClient.ping();
+    }));
 
     await this.server.start();
   }

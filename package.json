@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "Invend GmbH",
@@ -14,7 +14,7 @@
     "rendering"
   ],
   "dependencies": {
-    "@restorecommerce/chassis-srv": "^0.1.4",
+    "@restorecommerce/chassis-srv": "^0.1.5",
     "@restorecommerce/cluster-service": "^0.1.4",
     "@restorecommerce/grpc-client": "0.0.7",
     "@restorecommerce/handlebars-helperized": "^0.1.8",
