@@ -2,6 +2,7 @@
 
 - add new grpc healthcheck with readiness probe
 - listen on 0.0.0.0 for grpc port
+- up acs-client, protos and deps
 
 ### 0.1.4 (October 9th, 2020)
 

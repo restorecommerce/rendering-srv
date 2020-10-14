@@ -5,9 +5,9 @@ import * as cheerio from 'cheerio';
 import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
-import * as sconfig from '@restorecommerce/service-config';
+import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
@@ -249,8 +249,8 @@ export class Worker {
    */
   async start(cfg?: any, logger?: chassis.Logger): Promise<any> {
     if (!cfg) {
-      cfg = sconfig(process.cwd());
-      logger = new Logger(cfg.get('logger'));
+      cfg = createServiceConfig(process.cwd());
+      logger = createLogger(cfg.get('logger'));
     }
 
     this.service = new Service(cfg, logger);
