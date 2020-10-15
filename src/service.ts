@@ -73,9 +73,7 @@ export class Service {
     const reflectionService = new chassis.ServerReflection(transport.$builder, this.server.config);
     await this.server.bind(reflectionServiceName, reflectionService);
 
-    await this.server.bind(serviceNamesCfg.health, new chassis.Health(this.commandService, async () => {
-      return redisClient.ping();
-    }));
+    await this.server.bind(serviceNamesCfg.health, new chassis.Health(this.commandService));
 
     await this.server.start();
   }
