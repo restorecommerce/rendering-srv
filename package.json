@@ -3,7 +3,7 @@
   "version": "0.1.5",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
-  "author": "Invend GmbH",
+  "author": "n-fuse GmbH",
   "repository": {
     "type": "git",
     "url": "https://github.com/restorecommerce/rendering-srv.git"
