@@ -40,5 +40,5 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.3 && \
     chmod +x /bin/grpc_health_probe
 USER node
 
-HEALTHCHECK CMD npm run healthcheck
+HEALTHCHECK CMD ["/bin/grpc_health_probe", "-addr=:50051"]
 CMD [ "npm", "start" ]
