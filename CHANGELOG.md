@@ -1,3 +1,7 @@
+### 0.1.7 (October 28th, 2020)
+
+- added authentication headers for hbs users
+
 ### 0.1.6 (October 19th, 2020)
 
 - updated chassis-srv
