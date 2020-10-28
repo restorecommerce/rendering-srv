@@ -87,6 +87,13 @@ export class Service {
     return JSON.parse(msg.value.toString());
   }
 
+  private setAuthenticationHeaders(subjectID, token) {
+    return {
+      'account-id': subjectID,
+      Authorization: `Bearer ${token}`
+    };
+  }
+
   /**
    * subscribes to list of topics based on event names in config and
    * upon receiving the request renders the response
@@ -137,7 +144,16 @@ export class Service {
             let style = payload.style_url;
             try {
               if (style) {
-                const tplResponse = await fetch(style, {});
+                // if there is a tech user configured, pass the token
+                // in the headers when requesting the css file
+                // else try to do a request with empty headers
+                const techUsersCfg = this.cfg.get('techUsers');
+                let headers;
+                if (techUsersCfg && techUsersCfg.length > 0) {
+                  const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
+                  headers = this.setAuthenticationHeaders(hbsUser.id, hbsUser.token);
+                }
+                const tplResponse = await fetch(style, { headers });
                 if (!tplResponse.ok) {
                   that.logger.info('Could not retrieve CSS file from provided URL');
                 } else {

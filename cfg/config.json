@@ -118,5 +118,11 @@
   "serviceNames": {
     "cis": "io-restorecommerce-rendering-cis",
     "reflection": "io-restorecommerce-rendering-reflection"
-  }
+  },
+  "techUsers": [
+    {
+      "id": "hbs_user",
+      "token": "change.this.token.number"
+    }
+  ]
 }
