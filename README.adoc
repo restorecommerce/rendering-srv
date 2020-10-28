@@ -4,10 +4,11 @@ https://travis-ci.org/restorecommerce/rendering-srv?branch=master[image:http://i
 https://david-dm.org/restorecommerce/rendering-srv[image:https://img.shields.io/david/restorecommerce/rendering-srv.svg?style=flat-square[Dependencies]]
 https://coveralls.io/github/restorecommerce/rendering-srv?branch=master[image:http://img.shields.io/coveralls/restorecommerce/rendering-srv/master.svg?style=flat-square[Cover]]
 
-A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebars] templates
-part of the link:https://github.com/restorecommerce[Restorecommerce].
+A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebars] templates.
 
 Please consult the documentation for using it:
 
 - *link:https://docs.restorecommerce.io/rendering-srv/index.html[Usage]*
 - *link:https://docs.restorecommerce.io/architecture/index.html[General Architecture]*
+
+Part of the link:https://github.com/restorecommerce[Restorecommerce].

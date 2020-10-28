@@ -5,10 +5,10 @@ import * as should from 'should';
 
 import * as fs from 'fs';
 import * as http from 'http';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import * as path from 'path';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
-import * as sconfig from '@restorecommerce/service-config';
+import { createServiceConfig } from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from '../lib/service';
 
@@ -47,8 +47,8 @@ describe('rendering srv testing', () => {
   let response: Array<any>;
   let topic: Topic;
   before(async function start(): Promise<void> {
-    cfg = sconfig(process.cwd() + '/test');
-    logger = new Logger(cfg.get('logger'));
+    cfg = createServiceConfig(process.cwd() + '/test');
+    logger = createLogger(cfg.get('logger'));
 
     worker = new Worker();
     await worker.start(cfg, logger);
@@ -166,7 +166,7 @@ describe('rendering srv testing', () => {
 
       const path = cfg.get('templates:root') + cfg.get('templates:custom_helper_list:body');
       const msgTpl = fs.readFileSync(path).toString();
-      const people = [ { firstname: "John", lastname: "BonJovi" }, { firstname:"Lars", lastname:"Ulrich" } ];
+      const people = [{ firstname: "John", lastname: "BonJovi" }, { firstname: "Lars", lastname: "Ulrich" }];
       const renderRequest = {
         id: 'test-custom-helper-list',
         payload: [{
@@ -182,7 +182,7 @@ describe('rendering srv testing', () => {
         }]
       };
 
-      const renderer = new Renderer(msgTpl, '', '', {}, );
+      const renderer = new Renderer(msgTpl, '', '', {});
 
       validate = () => {
         should.exist(responseID);
@@ -350,12 +350,12 @@ describe('rendering srv testing', () => {
           data: marshall({ msg }),
           content_type: TEXT_CONTENT_TYPE
         },
-          // rendering two exactly equal templates
-          {
-            templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
-            data: marshall({ msg }),
-            content_type: TEXT_CONTENT_TYPE
-          }]
+        // rendering two exactly equal templates
+        {
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: TEXT_CONTENT_TYPE } }),
+          data: marshall({ msg }),
+          content_type: TEXT_CONTENT_TYPE
+        }]
       };
 
       const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
@@ -445,20 +445,20 @@ describe('rendering srv testing', () => {
           style_url: stylesUrl,
           content_type: 'application/html'
         },
-          // rendering two exactly equal templates
-          {
-            templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'application/html' } }),
-            data: marshall({
-              firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
-              paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
-              livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
-              item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
-              subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
-              accountPurpose, saleTerms
-            }),
-            style_url: stylesUrl,
-            content_type: 'application/html'
-          }]
+        // rendering two exactly equal templates
+        {
+          templates: marshall({ message: { body: bodyTpl, layout: layoutTpl, contentType: 'application/html' } }),
+          data: marshall({
+            firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
+            paymentStatus, customerNo, vatIdNo, billingStreet, billingCity, billingCountry, livingStreet,
+            livingCity, livingCountry, item1description, item1quantity, item1vat, item1amount, item2description,
+            item2quantity, item2vat, item2amount, item3description, item3quantity, item3vat, item3amount,
+            subTotalGross, subTotalNet, vat1total, vat2total, billTotal, accountBank, accountIban, accountBic,
+            accountPurpose, saleTerms
+          }),
+          style_url: stylesUrl,
+          content_type: 'application/html'
+        }]
       };
 
       const stylesPath = templates.style;

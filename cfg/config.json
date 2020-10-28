@@ -96,6 +96,18 @@
             "grpcRendering"
           ]
         }
+      },
+      "grpc-health-v1": {
+        "check": {
+          "transport": [
+            "grpcRendering"
+          ]
+        },
+        "watch": {
+          "transport": [
+            "grpcRendering"
+          ]
+        }
       }
     },
     "transports": [
@@ -104,20 +116,23 @@
         "provider": "grpc",
         "services": {
           "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service",
-          "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection"
+          "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection",
+          "grpc-health-v1": "grpc.health.v1.Health"
         },
         "protos": [
           "io/restorecommerce/commandinterface.proto",
-          "grpc/reflection/v1alpha/reflection.proto"
+          "grpc/reflection/v1alpha/reflection.proto",
+          "grpc/health/v1/health.proto"
         ],
         "protoRoot": "node_modules/@restorecommerce/protos/",
-        "addr": "localhost:50057"
+        "addr": "0.0.0.0:50057"
       }
     ]
   },
   "serviceNames": {
     "cis": "io-restorecommerce-rendering-cis",
-    "reflection": "io-restorecommerce-rendering-reflection"
+    "reflection": "io-restorecommerce-rendering-reflection",
+    "health": "grpc-health-v1"
   },
   "techUsers": [
     {

@@ -1,22 +1,22 @@
-import * as sconfig from '@restorecommerce/service-config';
-import {Logger} from '@restorecommerce/logger';
-import {grpcClient} from '@restorecommerce/grpc-client';
+import { createServiceConfig } from '@restorecommerce/service-config';
+import { createLogger } from '@restorecommerce/logger';
+import { grpcClient } from '@restorecommerce/grpc-client';
 
-const cfg = sconfig(process.cwd());
-const logger = new Logger(cfg.get('logger'));
+const cfg = createServiceConfig(process.cwd());
+const logger = createLogger(cfg.get('logger'));
 
 setTimeout(() => {
   logger.error('Healthcheck timed out!');
   process.exit(2);
 }, 60000);
 
-process.on('uncaughtException', (error)  => {
-  logger.error('Uncaught Exception: ', {error});
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception: ', { error });
   process.exit(3);
 });
 
 process.on('unhandledRejection', (error, promise) => {
-  logger.error('Unhandled rejected promise: ', {promise, error});
+  logger.error('Unhandled rejected promise: ', { promise, error });
   process.exit(4);
 });
 
@@ -36,8 +36,8 @@ const requests: Promise<any>[] = [];
 Object.keys(grpcConfig['services']).forEach((service) => {
   requests.push(new Promise<any>(async (resolve, reject) => {
     try {
-      const value = new Buffer(JSON.stringify({service})).toString('base64');
-      const fullPayload = {name: 'health_check', payload: {type_url: 'payload', value}};
+      const value = new Buffer(JSON.stringify({ service })).toString('base64');
+      const fullPayload = { name: 'health_check', payload: { type_url: 'payload', value } };
 
       logger.silly('Executing: ' + JSON.stringify(fullPayload));
 

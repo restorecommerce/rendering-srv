@@ -5,9 +5,9 @@ import * as cheerio from 'cheerio';
 import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import * as Renderer from '@restorecommerce/handlebars-helperized';
-import * as sconfig from '@restorecommerce/service-config';
+import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
@@ -34,7 +34,7 @@ export class Service {
   events: Events;
   topics: any;
   server: chassis.Server;
-  commandService: chassis.ICommandInterface;
+  commandService: chassis.CommandInterface;
   offsetStore: chassis.OffsetStore;
   constructor(cfg: any, logger: chassis.Logger) {
     this.cfg = cfg;
@@ -72,6 +72,8 @@ export class Service {
     const transport = this.server.transport[transportName];
     const reflectionService = new chassis.ServerReflection(transport.$builder, this.server.config);
     await this.server.bind(reflectionServiceName, reflectionService);
+
+    await this.server.bind(serviceNamesCfg.health, new chassis.Health(this.commandService));
 
     await this.server.start();
   }
@@ -261,8 +263,8 @@ export class Worker {
    */
   async start(cfg?: any, logger?: chassis.Logger): Promise<any> {
     if (!cfg) {
-      cfg = sconfig(process.cwd());
-      logger = new Logger(cfg.get('logger'));
+      cfg = createServiceConfig(process.cwd());
+      logger = createLogger(cfg.get('logger'));
     }
 
     this.service = new Service(cfg, logger);
