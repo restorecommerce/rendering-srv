@@ -12,6 +12,7 @@ import { createServiceConfig } from '@restorecommerce/service-config';
 import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
 import { createClient } from 'redis';
+import { Logger } from 'winston';
 
 const RENDER_REQ_EVENT = 'renderRequest';
 const HEALTH_CMD_EVENT = 'healthCheckCommand';
@@ -29,14 +30,14 @@ enum Strategy {
 }
 
 export class Service {
-  logger: chassis.Logger;
+  logger: Logger;
   cfg: any;
   events: Events;
   topics: any;
   server: chassis.Server;
   commandService: chassis.CommandInterface;
   offsetStore: chassis.OffsetStore;
-  constructor(cfg: any, logger: chassis.Logger) {
+  constructor(cfg: any, logger: Logger) {
     this.cfg = cfg;
     this.logger = logger;
 
@@ -89,9 +90,8 @@ export class Service {
     return JSON.parse(msg.value.toString());
   }
 
-  private setAuthenticationHeaders(subjectID, token) {
+  private setAuthenticationHeaders(token) {
     return {
-      'account-id': subjectID,
       Authorization: `Bearer ${token}`
     };
   }
@@ -153,7 +153,7 @@ export class Service {
                 let headers;
                 if (techUsersCfg && techUsersCfg.length > 0) {
                   const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
-                  headers = this.setAuthenticationHeaders(hbsUser.id, hbsUser.token);
+                  headers = this.setAuthenticationHeaders(hbsUser.token);
                 }
                 const tplResponse = await fetch(style, { headers });
                 if (!tplResponse.ok) {
@@ -261,7 +261,7 @@ export class Worker {
   /**
    * starting/stopping the actual server
    */
-  async start(cfg?: any, logger?: chassis.Logger): Promise<any> {
+  async start(cfg?: any, logger?: Logger): Promise<any> {
     if (!cfg) {
       cfg = createServiceConfig(process.cwd());
       logger = createLogger(cfg.get('logger'));

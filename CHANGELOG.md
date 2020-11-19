@@ -1,3 +1,8 @@
+### 0.1.8 (November 19th, 2020)
+
+- changes for removing subject-id
+- updated dependencies
+
 ### 0.1.7 (October 28th, 2020)
 
 - added authentication headers for hbs users

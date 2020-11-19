@@ -1,4 +1,4 @@
-FROM node:12.18.3-stretch
+FROM node:14.15.1-stretch
 ENV HOME=/home/node
 ENV APP_HOME=/home/node/rendering-srv
 ## SETTING UP THE APP ##
