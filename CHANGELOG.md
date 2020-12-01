@@ -1,3 +1,7 @@
+### 0.1.9 (December 1st, 2020)
+
+- copy handlebars templates into docker image
+
 ### 0.1.8 (November 19th, 2020)
 
 - changes for removing subject-id

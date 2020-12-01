@@ -30,6 +30,7 @@ RUN npm ci --only=production
 
 COPY setupTopics.js $APP_HOME/setupTopics.js
 COPY cfg $APP_HOME/cfg
+COPY handlebars $APP_HOME/handlebars
 COPY --from=build $APP_HOME/lib $APP_HOME/lib
 
 EXPOSE 50051
