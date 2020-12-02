@@ -17,3 +17,4 @@ Dockerfile
 buildkit.Dockerfile
 .dockerignore
 buildkit.dockerignore
+lib/
