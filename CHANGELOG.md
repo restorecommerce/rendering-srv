@@ -1,3 +1,7 @@
+### 0.1.11 (December 4th, 2020)
+
+- up acs-client (unauthenticated fix), protos (last_login updated on token)
+
 ### 0.1.10 (December 2nd, 2020)
 
 - fix docker image permissions
