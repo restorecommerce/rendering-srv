@@ -5,6 +5,7 @@
       "clientOpts": {
         "node": "http://elasticsearch:9200"
       },
+      "dataStream": true,
       "source": "rendering-srv"
     }
   },
