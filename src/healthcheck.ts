@@ -34,7 +34,7 @@ const command = client.makeEndpoint('command', 'grpc://' + grpcConfig['addr']);
 const requests: Promise<any>[] = [];
 
 Object.keys(grpcConfig['services']).forEach((service) => {
-  requests.push(new Promise<any>(async (resolve, reject) => {
+  requests.push(new Promise<void>(async (resolve, reject) => {
     try {
       const value = new Buffer(JSON.stringify({ service })).toString('base64');
       const fullPayload = { name: 'health_check', payload: { type_url: 'payload', value } };
