@@ -1,3 +1,8 @@
+### 0.1.12 (February 24th, 2021)
+
+- up logger and service-config and dependencies
+- updated node and npm version
+
 ### 0.1.11 (December 4th, 2020)
 
 - up acs-client (unauthenticated fix), protos (last_login updated on token)

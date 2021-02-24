@@ -1,6 +1,8 @@
-FROM node:14.15.1-stretch
+FROM node:14.15.5-stretch
 ENV HOME=/home/node
 ENV APP_HOME=/home/node/rendering-srv
+ENV NO_UPDATE_NOTIFIER=true
+RUN npm install -g npm
 ## SETTING UP THE APP ##
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME

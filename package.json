@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "n-fuse GmbH",
@@ -19,9 +19,9 @@
     "@restorecommerce/grpc-client": "^0.0.9",
     "@restorecommerce/handlebars-helperized": "^0.1.8",
     "@restorecommerce/kafka-client": "^0.1.13",
-    "@restorecommerce/logger": "^0.5.4",
+    "@restorecommerce/logger": "^0.6.1",
     "@restorecommerce/protos": "^0.0.20",
-    "@restorecommerce/service-config": "^0.3.4",
+    "@restorecommerce/service-config": "^0.4.1",
     "cheerio": "^0.22.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1"
