@@ -1,3 +1,7 @@
+### 0.1.13 (March 11th, 2021)
+
+- updated dependencies.
+
 ### 0.1.12 (February 24th, 2021)
 
 - up logger and service-config and dependencies
