@@ -14,7 +14,7 @@
     "rendering"
   ],
   "dependencies": {
-    "@restorecommerce/chassis-srv": "^0.1.10",
+    "@restorecommerce/chassis-srv": "^0.1.11",
     "@restorecommerce/cluster-service": "^0.1.4",
     "@restorecommerce/grpc-client": "^0.0.9",
     "@restorecommerce/handlebars-helperized": "^0.1.8",
