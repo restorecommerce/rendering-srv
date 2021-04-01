@@ -163,7 +163,7 @@ export class Service {
                 }
               }
             } catch (err) {
-              that.logger.info('Error occurred while retrieving style sheet');
+              that.logger.error('Error occurred while retrieving style sheet');
               response.push(that.marshallProtobufAny({ error: err.message }));
             }
 
