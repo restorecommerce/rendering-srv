@@ -66,7 +66,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./buildkit.Dockerfile
+          file: ./Dockerfile
           platforms: linux/amd64
           push: false
           build-args: |
