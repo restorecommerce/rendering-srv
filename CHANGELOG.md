@@ -1,3 +1,8 @@
+## 0.1.15 (June 28th, 2021)
+
+- updated node version to 16.3
+- updated logger and protos
+
 ### 0.1.14 (March 19th, 2021)
 
 - migrated from redis to ioredis
