@@ -224,7 +224,7 @@ export class Service {
     const topicTypes = _.keys(kafkaCfg.topics);
     for (let topicType of topicTypes) {
       const topicName = kafkaCfg.topics[topicType].topic;
-      this.topics[topicType] = this.events.topic(topicName);
+      this.topics[topicType] = await this.events.topic(topicName);
       const offsetValue = await this.offsetStore.getOffset(topicName);
       this.logger.info('subscribing to topic with offset value',
         topicName, offsetValue);

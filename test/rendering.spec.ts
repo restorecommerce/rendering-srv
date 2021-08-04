@@ -71,9 +71,15 @@ describe('rendering srv testing', () => {
 
   describe('with test response listener', () => {
     before(async function start(): Promise<void> {
-      events = new Events(cfg.get('events:kafka'), logger);
+      events = new Events({
+        ...cfg.get('events:kafka'),
+        groupId: 'rendering-srv-test-runner',
+        kafka: {
+          ...cfg.get('events:kafka:kafka')
+        }
+      }, logger)
       await events.start();
-      topic = events.topic('io.restorecommerce.rendering');
+      topic = await events.topic('io.restorecommerce.rendering');
       topic.on('renderResponse', listener);
     });
     after(async function stop(): Promise<void> {
@@ -118,7 +124,7 @@ describe('rendering srv testing', () => {
         }]
       };
 
-      const renderer = new Renderer(msgTpl, '', '', {});
+      const renderer = new Renderer(msgTpl, '', '', {}, []);
 
       validate = () => {
         should.exist(responseID);
@@ -182,7 +188,7 @@ describe('rendering srv testing', () => {
         }]
       };
 
-      const renderer = new Renderer(msgTpl, '', '', {});
+      const renderer = new Renderer(msgTpl, '', '', {}, []);
 
       validate = () => {
         should.exist(responseID);
@@ -221,7 +227,7 @@ describe('rendering srv testing', () => {
         }]
       };
 
-      const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
+      const renderer = new Renderer(bodyTpl, layoutTpl, '', {}, []);
 
       validate = () => {
         should.exist(responseID);
@@ -266,7 +272,7 @@ describe('rendering srv testing', () => {
 
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
-      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {}, []);
 
       validate = () => {
         should.exist(responseID);
@@ -309,7 +315,7 @@ describe('rendering srv testing', () => {
 
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
-      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {}, []);
 
       validate = () => {
         should.exist(responseID);
@@ -358,7 +364,7 @@ describe('rendering srv testing', () => {
         }]
       };
 
-      const renderer = new Renderer(bodyTpl, layoutTpl, '', {});
+      const renderer = new Renderer(bodyTpl, layoutTpl, '', {}, []);
       validate = () => {
         should.exist(responseID);
         should.exist(response);
@@ -463,7 +469,7 @@ describe('rendering srv testing', () => {
 
       const stylesPath = templates.style;
       const style = fs.readFileSync(root + stylesPath).toString();
-      const renderer = new Renderer(bodyTpl, layoutTpl, style, {});
+      const renderer = new Renderer(bodyTpl, layoutTpl, style, {}, []);
       validate = () => {
         should.exist(responseID);
         should.exist(response);

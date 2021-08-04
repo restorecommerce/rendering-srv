@@ -12,7 +12,12 @@
     "kafka": {
       "provider": "kafka",
       "groupId": "rendering-srv",
-      "clientId": "rendering-srv",
+      "kafka": {
+        "clientId": "rendering-srv",
+        "brokers": [
+          "localhost:29092"
+        ]
+      },
       "kafkaHost": "localhost:29092",
       "latestOffset": false,
       "renderRequest": {

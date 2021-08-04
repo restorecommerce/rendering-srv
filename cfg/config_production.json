@@ -14,7 +14,11 @@
   },
   "events": {
     "kafka": {
-      "kafkaHost": "kafka:9092"
+      "kafka": {
+        "brokers": [
+          "kafka:9092"
+        ]
+      }
     }
   },
   "server": {
