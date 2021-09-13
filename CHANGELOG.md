@@ -1,3 +1,7 @@
+## 0.2.1 (September 13th, 2021)
+
+- up dependencies
+
 ## 0.2.0 (August 10th, 2021)
 
 - latest grpc-client
