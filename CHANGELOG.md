@@ -1,3 +1,7 @@
+## 0.2.2 (September 21st, 2021)
+
+- up RC dependencies
+
 ## 0.2.1 (September 13th, 2021)
 
 - up dependencies
