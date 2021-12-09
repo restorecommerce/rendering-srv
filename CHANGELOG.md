@@ -1,3 +1,7 @@
+## 0.2.4 (December 9th, 2021)
+
+- up dependencies
+
 ## 0.2.3 (October 7th, 2021)
 
 - up protos

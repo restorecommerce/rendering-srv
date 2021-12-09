@@ -264,7 +264,12 @@ export class Worker {
   async start(cfg?: any, logger?: Logger): Promise<any> {
     if (!cfg) {
       cfg = createServiceConfig(process.cwd());
-      logger = createLogger(cfg.get('logger'));
+      const loggerCfg = cfg.get('logger');
+      loggerCfg.esTransformer = (msg) => {
+        msg.fields = JSON.stringify(msg.fields);
+        return msg;
+      };
+      logger = createLogger(loggerCfg);
     }
 
     this.service = new Service(cfg, logger);
