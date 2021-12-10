@@ -1,3 +1,7 @@
+## 0.2.5 (December 10th, 2021)
+
+- removed setup topics script
+
 ## 0.2.4 (December 9th, 2021)
 
 - up dependencies

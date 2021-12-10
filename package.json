@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "n-fuse GmbH",
@@ -45,15 +45,14 @@
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "start": "npm run createtopics && node lib/start.js",
-    "dev": "cross-env NODE_ENV=development npm run createtopics && nodemon --watch './src/**/*.ts' --exec 'ts-node' src/start.ts",
-    "pretest": "npm run build && npm run createtopics",
+    "start": "node lib/start.js",
+    "dev": "cross-env NODE_ENV=development && nodemon --watch './src/**/*.ts' --exec 'ts-node' src/start.ts",
+    "pretest": "npm run build",
     "test": "npm run lint && nyc npm run mocha",
     "lint": "eslint src --ext .ts",
     "mocha": "cross-env NODE_ENV=test mocha --timeout 60000 --stack-trace --exit",
     "lcov-report": "nyc report --reporter=lcov",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "createtopics": "node setupTopics.js io.restorecommerce.rendering",
     "test-debug": "cross-env NODE_ENV=test mocha --inspect-brk",
     "test-prod-env": "cross-env NODE_ENV=prod mocha",
     "tsctests": "tsc -d -p tsconfig.test.json",
