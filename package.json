@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "n-fuse GmbH",
@@ -28,9 +28,9 @@
   },
   "devDependencies": {
     "@types/mocha": "^9.0.0",
-    "@types/node": "^16.11.12",
-    "@typescript-eslint/eslint-plugin": "^5.6.0",
-    "@typescript-eslint/parser": "^5.6.0",
+    "@types/node": "^16.11.13",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
     "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.4.1",
@@ -42,7 +42,7 @@
     "rimraf": "^3.0.2",
     "should": "^13.2.3",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.4"
   },
   "scripts": {
     "start": "node lib/start.js",
