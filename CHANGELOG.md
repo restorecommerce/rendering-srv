@@ -1,3 +1,7 @@
+## 0.2.7 (December 22nd, 2021)
+
+- updated RC dependencies
+
 ## 0.2.6 (December 15th, 2021)
 
 - updated dependencies
