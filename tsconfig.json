@@ -9,7 +9,6 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": false,
-    "importHelpers": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "sourceMap": true,
