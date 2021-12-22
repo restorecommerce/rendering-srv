@@ -6,7 +6,7 @@ import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
-import * as Renderer from '@restorecommerce/handlebars-helperized';
+import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';

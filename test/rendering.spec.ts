@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import { createLogger } from '@restorecommerce/logger';
 import * as path from 'path';
-import * as Renderer from '@restorecommerce/handlebars-helperized';
+import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from '../lib/service';
