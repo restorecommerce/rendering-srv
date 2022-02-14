@@ -1,6 +1,6 @@
 {
   "redis": {
-    "host": "localhost",
+    "url": "redis://localhost:6379",
     "port": 6379,
     "offsetStoreInterval": 1000,
     "db-indexes": {

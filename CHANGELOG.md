@@ -1,4 +1,8 @@
-## 0.2.10 (February 10th, 2022)
+## 0.2.10 (February 14th, 2022)
+
+- updated redis url
+
+## 0.2.10 (February 14th, 2022)
 
 - updated dependencies and migrated from ioredis to redis
 

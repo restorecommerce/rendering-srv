@@ -10,7 +10,7 @@
     }
   },
   "redis": {
-    "host": "redis"
+    "url": "redis://redis:6379"
   },
   "events": {
     "kafka": {
