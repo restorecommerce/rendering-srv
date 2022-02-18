@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "n-fuse GmbH",
@@ -14,7 +14,7 @@
     "rendering"
   ],
   "dependencies": {
-    "@restorecommerce/chassis-srv": "^0.3.7",
+    "@restorecommerce/chassis-srv": "^0.3.8",
     "@restorecommerce/cluster-service": "^0.1.11",
     "@restorecommerce/grpc-client": "^0.3.1",
     "@restorecommerce/handlebars-helperized": "^0.1.16",

@@ -1,4 +1,8 @@
-## 0.2.10 (February 14th, 2022)
+## 0.2.12 (February 18th, 2022)
+
+- updated chassis-srv (includes fix for offset store config)
+
+## 0.2.11 (February 14th, 2022)
 
 - updated redis url
 
