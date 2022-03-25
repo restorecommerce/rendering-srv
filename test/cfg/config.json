@@ -83,6 +83,9 @@
     },
     "custom_helper_list": {
       "body": "custom_helper_list.hbs"
+    },
+    "custom_helper_eq": {
+      "body": "test_message_body_eq.hbs"
     }
   },
   "static_server": {
