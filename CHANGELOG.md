@@ -1,3 +1,7 @@
+## 0.2.13 (March 25th, 2022)
+
+- added equality custom helper function with test
+
 ## 0.2.12 (February 18th, 2022)
 
 - updated chassis-srv (includes fix for offset store config)
