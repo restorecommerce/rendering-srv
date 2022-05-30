@@ -11,7 +11,7 @@ import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
-import { createClient } from 'redis';
+import { createClient, RedisClientType } from 'redis';
 import { Logger } from 'winston';
 
 const RENDER_REQ_EVENT = 'renderRequest';
@@ -62,7 +62,7 @@ export class Service {
     // init redis client for subject index
     const redisConfig = this.cfg.get('redis');
     redisConfig.database = this.cfg.get('redis:db-indexes:db-subject');
-    const redisClient = createClient(redisConfig);
+    const redisClient: RedisClientType<any, any> = createClient(redisConfig);
     redisClient.on('error', (err) => this.logger.error('Redis client error in subject store', err));
     await redisClient.connect();
     this.commandService = new chassis.CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
