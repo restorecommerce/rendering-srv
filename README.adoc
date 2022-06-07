@@ -2,7 +2,7 @@
 
 https://travis-ci.org/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/travis/restorecommerce/rendering-srv/master.svg?style=flat-square[Build Status]]
 https://depfu.com/repos/github/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/depfu/dependencies/github/restorecommerce/rendering-srv?style=flat-square[Dependencies]]
-https://coveralls.io/github/restorecommerce/rendering-srv?branch=master[image:http://img.shields.io/coveralls/github/restorecommerce/rendering-srv/master.svg?style=flat-square[Coverage Status]]
+https://coveralls.io/github/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/coveralls/github/restorecommerce/rendering-srv/master.svg?style=flat-square[Coverage Status]]
 
 A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebars] templates.
 
