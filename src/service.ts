@@ -2,7 +2,6 @@
 
 import * as _ from 'lodash';
 import * as cheerio from 'cheerio';
-import * as fetch from 'node-fetch';
 // microservice
 import { Events, Topic } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
@@ -28,6 +27,14 @@ enum Strategy {
   INLINE = 1,
   COPY = 2
 }
+
+// node-fetch is now ESM only module
+// prevent TypeScript rewrite of async import() to require() in CJS projects
+const _importDynamic = new Function('modulePath', 'return import(modulePath)');
+const fetch = async (...args) => {
+  const { default: fetch } = await _importDynamic('node-fetch');
+  return fetch(...args);
+};
 
 export class Service {
   logger: Logger;
