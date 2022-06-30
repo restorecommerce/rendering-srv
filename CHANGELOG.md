@@ -1,3 +1,7 @@
+## 0.3.0 (June 30th, 2022)
+
+- Up deps
+
 ## 0.2.13 (March 25th, 2022)
 
 - added equality custom helper function with test
