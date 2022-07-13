@@ -24,7 +24,7 @@
     "@restorecommerce/service-config": "^0.4.27",
     "cheerio": "^0.22.0",
     "lodash": "^4.17.21",
-    "node-fetch": "^3.2.6"
+    "node-fetch": "^3.2.8"
   },
   "devDependencies": {
     "@types/mocha": "^9.1.1",
