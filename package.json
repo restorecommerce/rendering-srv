@@ -19,7 +19,7 @@
     "@restorecommerce/grpc-client": "^0.4.5",
     "@restorecommerce/handlebars-helperized": "^0.1.20",
     "@restorecommerce/kafka-client": "^0.4.3",
-    "@restorecommerce/logger": "^0.13.0",
+    "@restorecommerce/logger": "^0.13.1",
     "@restorecommerce/protos": "^0.7.2",
     "@restorecommerce/service-config": "^0.4.27",
     "cheerio": "^0.22.0",
