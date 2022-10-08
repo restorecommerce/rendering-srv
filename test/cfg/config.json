@@ -27,10 +27,6 @@
       },
       "latestOffset": true,
       "renderRequest": {
-        "protos": [
-          "io/restorecommerce/rendering.proto"
-        ],
-        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.rendering.RenderRequest",
         "bufferFields": [
           { "payload" : ["templates", "data", "options" ] }
@@ -38,10 +34,6 @@
         "enableLogging": false
       },
       "renderResponse": {
-        "protos": [
-          "io/restorecommerce/rendering.proto"
-        ],
-        "protoRoot": "node_modules/@restorecommerce/protos/",
         "messageObject": "io.restorecommerce.rendering.RenderResponse",
         "bufferFields": [
           "response"
@@ -93,49 +85,10 @@
     "port": 8088
   },
   "server": {
-    "services": {
-      "io-restorecommerce-rendering-cis": {
-        "check": {
-          "transport": [
-            "grpcRendering"
-          ]
-        }
-      },
-      "io-restorecommerce-rendering-reflection": {
-        "serverReflectionInfo": {
-          "transport": [
-            "grpcRendering"
-          ]
-        }
-      },
-      "grpc-health-v1": {
-        "check": {
-          "transport": [
-            "grpc"
-          ]
-        },
-        "watch": {
-          "transport": [
-            "grpc"
-          ]
-        }
-      }
-    },
     "transports": [
       {
         "name": "grpcRendering",
         "provider": "grpc",
-        "services": {
-          "io-restorecommerce-rendering-cis": "io.restorecommerce.commandinterface.Service",
-          "io-restorecommerce-rendering-reflection": "grpc.reflection.v1alpha.ServerReflection",
-          "grpc-health-v1": "grpc.health.v1.Health"
-        },
-        "protos": [
-          "io/restorecommerce/commandinterface.proto",
-          "grpc/reflection/v1alpha/reflection.proto",
-          "grpc/health/v1/health.proto"
-        ],
-        "protoRoot": "node_modules/@restorecommerce/protos/",
         "addr": "localhost:50051"
       }
     ]

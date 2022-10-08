@@ -3,7 +3,7 @@
 import * as _ from 'lodash';
 import * as cheerio from 'cheerio';
 // microservice
-import { Events, Topic } from '@restorecommerce/kafka-client';
+import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
 import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
@@ -12,21 +12,26 @@ import * as chassis from '@restorecommerce/chassis-srv';
 import * as fs from 'fs';
 import { createClient, RedisClientType } from 'redis';
 import { Logger } from 'winston';
+import {
+  ServiceDefinition as CommandInterfaceServiceDefinition,
+  protoMetadata as commandInterfaceMeta
+} from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/commandinterface';
+import { BindConfig } from '@restorecommerce/chassis-srv/lib/microservice/transport/provider/grpc';
+import { HealthDefinition } from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/health/v1/health';
+import {
+  protoMetadata as reflectionMeta
+} from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/reflection/v1alpha/reflection';
+import { ServerReflectionService } from 'nice-grpc-server-reflection';
+import { RenderRequest, RenderResponse, Payload_Strategy, protoMetadata as renderMeta } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering';
+
+registerProtoMeta(commandInterfaceMeta, reflectionMeta, renderMeta);
 
 const RENDER_REQ_EVENT = 'renderRequest';
-const HEALTH_CMD_EVENT = 'healthCheckCommand';
-const HEALTH_RES_EVENT = 'healthCheckResponse';
-
 // we store here the handlebars helpers
 const CURR_DIR = process.cwd();
 const REL_PATH_HANDLEBARS = '/handlebars/';
 const HANDLEBARS_DIR = './handlebars';
 let customHelpersList: string[] = [];
-
-enum Strategy {
-  INLINE = 1,
-  COPY = 2
-}
 
 // node-fetch is now ESM only module
 // prevent TypeScript rewrite of async import() to require() in CJS projects
@@ -74,18 +79,28 @@ export class Service {
     await redisClient.connect();
     this.commandService = new chassis.CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
     const serviceNamesCfg = this.cfg.get('serviceNames');
-    await this.server.bind(serviceNamesCfg.cis, this.commandService);
+    await this.server.bind(serviceNamesCfg.cis, {
+      service: CommandInterfaceServiceDefinition,
+      implementation: this.commandService
+    } as BindConfig<CommandInterfaceServiceDefinition>);
 
     // Add ReflectionService
     const reflectionServiceName = serviceNamesCfg.reflection;
-    const transportName = this.cfg.get(`server:services:${reflectionServiceName}:serverReflectionInfo:transport:0`);
-    const transport = this.server.transport[transportName];
-    const reflectionService = new chassis.ServerReflection(transport.$builder, this.server.config);
-    await this.server.bind(reflectionServiceName, reflectionService);
+    const reflectionService = chassis.buildReflectionService([
+      { descriptor: commandInterfaceMeta.fileDescriptor }
+    ]);
+    await this.server.bind(reflectionServiceName, {
+      service: ServerReflectionService,
+      implementation: reflectionService
+    });
 
-    await this.server.bind(serviceNamesCfg.health, new chassis.Health(this.commandService));
+    await this.server.bind(serviceNamesCfg.health, {
+      service: HealthDefinition,
+      implementation: new chassis.Health(this.commandService)
+    } as BindConfig<HealthDefinition>);
 
     await this.server.start();
+    this.logger.info('Service started successfully');
   }
 
   marshallProtobufAny(msg: any): any {
@@ -118,7 +133,7 @@ export class Service {
       const response = [];
       if (eventName == RENDER_REQ_EVENT) {
         that.logger.info('Rendering request received');
-        const request = msg;
+        const request = msg as RenderRequest;
         const id: string = request.id;
         if (!request || !request.payload || request.payload.length == 0) {
           const error = { error: 'Missing payload' };
@@ -140,7 +155,7 @@ export class Service {
               options = {};
             }
 
-            const renderingStrategy = payload.strategy || Strategy.INLINE;
+            let renderingStrategy = payload.strategy || Payload_Strategy.INLINE;
             if (!templates || _.keys(templates).length == 0) {
               const error = { error: 'Missing templates' };
               response.push(that.marshallProtobufAny(error));
@@ -190,7 +205,7 @@ export class Service {
               const layout = template.layout; // may be null
 
               let tplRenderer;
-              if (renderingStrategy == Strategy.INLINE) {
+              if (renderingStrategy == Payload_Strategy.INLINE) {
                 tplRenderer = new Renderer(body, layout, style, options, customHelpersList);
               } else {
                 // do not inline!
@@ -204,7 +219,7 @@ export class Service {
                 this.logger.error('Error:', err);
                 response.push(that.marshallProtobufAny({ error: 'Error while rendering template' }));
               }
-              if (renderingStrategy == Strategy.COPY && style) {
+              if (renderingStrategy == Payload_Strategy.COPY && style) {
                 const html = cheerio.load(rendered);
                 html('html').append('<style></style>');
                 html('style').attr('type', 'text/css');
@@ -252,7 +267,7 @@ export class Service {
     const message = {
       id: requestID,
       response
-    };
+    } as RenderResponse;
     await this.topics.rendering.emit('renderResponse', message);
   }
 
