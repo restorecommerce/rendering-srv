@@ -8,6 +8,42 @@
       "db-subject": 4
     }
   },
+  "logger": {
+    "console": {
+      "handleExceptions": false,
+      "level": "silly",
+      "colorize": true,
+      "prettyPrint": true
+    },
+    "fieldOptions": {
+      "bufferFields": [
+        {
+          "fieldPath": "messages.[0].payload.[0].templates"
+        },
+        {
+          "fieldPath": "messages.[0].payload.[0].data"
+        },
+        {
+          "fieldPath": "messages.[0].payload.[0].options"
+        },
+        {
+          "fieldPath": "payload.[0].templates"
+        },
+        {
+          "fieldPath": "payload.[0].data"
+        },
+        {
+          "fieldPath": "payload.[0].options"
+        },
+        {
+          "fieldPath": "response"
+        },
+        {
+          "fieldPath": "messages.[0].response"
+        }
+      ]
+    }
+  },
   "events": {
     "kafka": {
       "provider": "kafka",
@@ -21,18 +57,10 @@
       "kafkaHost": "localhost:29092",
       "latestOffset": false,
       "renderRequest": {
-        "messageObject": "io.restorecommerce.rendering.RenderRequest",
-        "bufferFields": [
-          { "payload" : ["templates", "data", "options" ] }
-         ],
-         "enableLogging": true
+        "messageObject": "io.restorecommerce.rendering.RenderRequest"
       },
       "renderResponse": {
-        "messageObject": "io.restorecommerce.rendering.RenderResponse",
-        "bufferFields": [
-          "response"
-        ],
-        "enableLogging": true
+        "messageObject": "io.restorecommerce.rendering.RenderResponse"
       },
       "healthCheckCommand": {
         "messageObject": "io.restorecommerce.commandinterface.CommandRequest"

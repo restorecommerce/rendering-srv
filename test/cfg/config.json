@@ -2,9 +2,37 @@
   "logger": {
     "console": {
       "handleExceptions": false,
-      "level": "crit",
+      "level": "silly",
       "colorize": true,
       "prettyPrint": true
+    },
+    "fieldOptions": {
+      "bufferFields": [
+        {
+          "fieldPath": "messages.[0].payload.[0].templates"
+        },
+        {
+          "fieldPath": "messages.[0].payload.[0].data"
+        },
+        {
+          "fieldPath": "messages.[0].payload.[0].options"
+        },
+        {
+          "fieldPath": "payload.[0].templates"
+        },
+        {
+          "fieldPath": "payload.[0].data"
+        },
+        {
+          "fieldPath": "payload.[0].options"
+        },
+        {
+          "fieldPath": "response"
+        },
+        {
+          "fieldPath": "messages.[0].response"
+        }
+      ]
     }
   },
   "redis": {
@@ -27,18 +55,10 @@
       },
       "latestOffset": true,
       "renderRequest": {
-        "messageObject": "io.restorecommerce.rendering.RenderRequest",
-        "bufferFields": [
-          { "payload" : ["templates", "data", "options" ] }
-        ],
-        "enableLogging": false
+        "messageObject": "io.restorecommerce.rendering.RenderRequest"
       },
       "renderResponse": {
-        "messageObject": "io.restorecommerce.rendering.RenderResponse",
-        "bufferFields": [
-          "response"
-        ],
-        "enableLogging": false
+        "messageObject": "io.restorecommerce.rendering.RenderResponse"
       },
       "topics": {
         "rendering": {
