@@ -44,7 +44,7 @@ describe('rendering srv testing', () => {
   let listener: any;
 
   let responseID: string;
-  let response: Array<any>;
+  let responses: Array<any>;
   let topic: Topic;
   before(async function start(): Promise<void> {
     cfg = createServiceConfig(process.cwd() + '/test');
@@ -59,7 +59,7 @@ describe('rendering srv testing', () => {
     listener = function (msg: any, context: any, config: any, eventName: string): void {
       if (eventName == 'renderResponse') {
         responseID = msg.id;
-        response = msg.response;
+        responses = msg.responses;
         validate();
       }
     };
@@ -89,15 +89,15 @@ describe('rendering srv testing', () => {
     it('should return missing payload response if request payload is empty', async () => {
       let renderRequest = {
         id: 'test-empty',
-        payload: []
+        payloads: []
       };
       validate = () => {
         const responseObject = { error: 'Missing payload' };
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-empty');
-        response.length.should.equal(1);
-        const responseStr = JSON.stringify(unmarshall(response[0]));
+        responses.length.should.equal(1);
+        const responseStr = JSON.stringify(unmarshall(responses[0]));
         responseStr.should.equal(JSON.stringify(responseObject));
       };
       const offset = await topic.$offset(-1) + 1;
@@ -111,7 +111,7 @@ describe('rendering srv testing', () => {
       const msg = 'Hello World!';
       const renderRequest = {
         id: 'test-plain',
-        payload: [{
+        payloads: [{
           templates: marshall({
             message: {
               body: msgTpl
@@ -128,11 +128,11 @@ describe('rendering srv testing', () => {
 
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-plain');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        const obj = unmarshall(response[0]);
+        responses.length.should.equal(1);
+        responses[0].should.be.json;
+        const obj = unmarshall(responses[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg }));
@@ -175,7 +175,7 @@ describe('rendering srv testing', () => {
       const people = [{ firstname: "John", lastname: "BonJovi" }, { firstname: "Lars", lastname: "Ulrich" }];
       const renderRequest = {
         id: 'test-custom-helper-list',
-        payload: [{
+        payloads: [{
           templates: marshall({
             message: {
               body: msgTpl
@@ -192,11 +192,11 @@ describe('rendering srv testing', () => {
 
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-custom-helper-list');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        let obj = unmarshall(response[0]);
+        responses.length.should.equal(1);
+        responses[0].should.be.json;
+        let obj = unmarshall(responses[0]);
         obj.should.hasOwnProperty('message');
         let message = obj.message;
         message.should.equal(renderer.render({ people }));
@@ -213,7 +213,7 @@ describe('rendering srv testing', () => {
       const indicationStrategy = 'request_service_by_indication';
       const renderRequest = {
         id: 'test-custom-helper-eq',
-        payload: [{
+        payloads: [{
           templates: marshall({
             message: {
               body: msgTpl
@@ -228,11 +228,11 @@ describe('rendering srv testing', () => {
       const renderer = new Renderer(msgTpl, '', '', {}, []);
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-custom-helper-eq');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        let obj = unmarshall(response[0]);
+        responses.length.should.equal(1);
+        responses[0].should.be.json;
+        let obj = unmarshall(responses[0]);
         obj.should.hasOwnProperty('message');
         let message = obj.message;
         message.should.equal(renderer.render({ indicationStrategy }));
@@ -252,7 +252,7 @@ describe('rendering srv testing', () => {
 
       const renderRequest = {
         id: 'test-layout',
-        payload: [{
+        payloads: [{
           templates: marshall({
             message: { body: bodyTpl, layout: layoutTpl },
           }),
@@ -265,11 +265,11 @@ describe('rendering srv testing', () => {
 
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-layout');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        const obj = unmarshall(response[0]);
+        responses.length.should.equal(1);
+        responses[0].should.be.json;
+        const obj = unmarshall(responses[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg }));
@@ -296,7 +296,7 @@ describe('rendering srv testing', () => {
 
       const renderRequest = {
         id: 'test-style',
-        payload: [{
+        payloads: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({ msg }),
           style_url: stylesUrl,
@@ -310,11 +310,11 @@ describe('rendering srv testing', () => {
 
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-style');
-        response.length.should.equal(1);
-        response[0].should.be.json;
-        const obj = unmarshall(response[0]);
+        responses.length.should.equal(1);
+        responses[0].should.be.json;
+        const obj = unmarshall(responses[0]);
         obj.should.hasOwnProperty('message');
         const message = obj.message;
         message.should.equal(renderer.render({ msg }));
@@ -339,7 +339,7 @@ describe('rendering srv testing', () => {
 
       const renderRequest = {
         id: 'test-style',
-        payload: [{
+        payloads: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({ msg }),
           style_url: stylesUrl,
@@ -353,13 +353,13 @@ describe('rendering srv testing', () => {
 
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-style');
-        response.length.should.equal(2);
-        response[0].should.be.json;
-        response[1].should.be.json;
-        const response_0 = unmarshall(response[0]);
-        const response_1 = unmarshall(response[1]);
+        responses.length.should.equal(2);
+        responses[0].should.be.json;
+        responses[1].should.be.json;
+        const response_0 = unmarshall(responses[0]);
+        const response_1 = unmarshall(responses[1]);
         const expectedObj = {
           error: 'request to http://invalidurl/main.css ' +
             'failed, reason: getaddrinfo (EAI_AGAIN|ENOTFOUND) ' +
@@ -385,7 +385,7 @@ describe('rendering srv testing', () => {
 
       const renderRequest = {
         id: 'test-multiple',
-        payload: [{
+        payloads: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({ msg }),
           content_type: TEXT_CONTENT_TYPE
@@ -401,10 +401,10 @@ describe('rendering srv testing', () => {
       const renderer = new Renderer(bodyTpl, layoutTpl, '', {}, []);
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-multiple');
-        response.length.should.equal(2);
-        response.forEach(element => {
+        responses.length.should.equal(2);
+        responses.forEach(element => {
           const obj = unmarshall(element);
           obj.should.be.json;
           obj.should.hasOwnProperty('message');
@@ -472,7 +472,7 @@ describe('rendering srv testing', () => {
 
       const renderRequest = {
         id: 'test-complex-css',
-        payload: [{
+        payloads: [{
           templates: marshall({ message: { body: bodyTpl, layout: layoutTpl } }),
           data: marshall({
             firstName, lastName, companyName, streetAddress, cityCodeAdress, invoiceNo, invoiceDate,
@@ -506,10 +506,10 @@ describe('rendering srv testing', () => {
       const renderer = new Renderer(bodyTpl, layoutTpl, style, {}, []);
       validate = () => {
         should.exist(responseID);
-        should.exist(response);
+        should.exist(responses);
         responseID.should.equal('test-complex-css');
-        response.length.should.equal(2);
-        response.forEach(element => {
+        responses.length.should.equal(2);
+        responses.forEach(element => {
           const obj = unmarshall(element);
           obj.should.be.json;
           obj.should.hasOwnProperty('message');

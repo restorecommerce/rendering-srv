@@ -1,3 +1,7 @@
+## 1.0.0 (June 2nd, 2023)
+
+- up all deps (inculding the optional fields and pluralization for protos)
+
 ## 0.3.2 (October 26th, 2022)
 
 - move to full typed client and server, full text search

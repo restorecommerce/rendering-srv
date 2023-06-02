@@ -13,7 +13,7 @@ import * as fs from 'fs';
 import { createClient, RedisClientType } from 'redis';
 import { Logger } from 'winston';
 import {
-  ServiceDefinition as CommandInterfaceServiceDefinition,
+  CommandInterfaceServiceDefinition,
   protoMetadata as commandInterfaceMeta
 } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/commandinterface';
 import { BindConfig } from '@restorecommerce/chassis-srv/lib/microservice/transport/provider/grpc';
@@ -135,12 +135,12 @@ export class Service {
         that.logger.info('Rendering request received');
         const request = msg as RenderRequest;
         const id: string = request.id;
-        if (!request || !request.payload || request.payload.length == 0) {
+        if (!request || !request.payloads || request.payloads.length == 0) {
           const error = { error: 'Missing payload' };
           response.push(that.marshallProtobufAny(error));
         } else {
 
-          const payloads = request.payload;
+          const payloads = request.payloads;
 
           for (let payload of payloads) {
             const templates = that.unmarshallProtobufAny(payload.templates);
@@ -263,10 +263,10 @@ export class Service {
 
   }
 
-  async reply(requestID: string, response: Array<any>): Promise<any> {
+  async reply(requestID: string, responses: Array<any>): Promise<any> {
     const message = {
       id: requestID,
-      response
+      responses
     } as RenderResponse;
     await this.topics.rendering.emit('renderResponse', message);
   }
