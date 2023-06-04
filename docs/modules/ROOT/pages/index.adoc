@@ -56,7 +56,7 @@ This microservice consumes messages for the following events by topic:
 |======================================================================================================================================
 | Field | Type | Label | Description
 | id | string | required | Request ID
-| payload | [ ] `io.restorecommerce.rendering.Payload` | required | List of templates and data
+| payloads | [ ] `io.restorecommerce.rendering.Payload` | required | List of templates and data
 |======================================================================================================================================
 
 `io.restorecommerce.rendering.Payload`
@@ -81,14 +81,5 @@ This microservice consumes messages for the following events by topic:
 |======================================================================================================================================
 | Field | Type | Label | Description
 | id | string | required | Same value as the respective `RenderRequest` id
-| response | [ ] `io.restorecommerce.rendering.Response` | required | List of rendered outputs
-|======================================================================================================================================
-
-`io.restorecommerce.rendering.Response`
-
-[width="100%",cols="20%,16%,20%,44%",options="header",]
-|======================================================================================================================================
-| Field | Type | Label | Description
-| content | string | required | JSON mapping of template labels to rendered output
-| content_type | string | required | content-type ex: 'application\html' or 'application\text'
+| responses | [ ] `google.protobuf.Any` | required | List of rendered outputs
 |======================================================================================================================================
