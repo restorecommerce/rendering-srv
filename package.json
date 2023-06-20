@@ -1,6 +1,6 @@
 {
   "name": "@restorecommerce/rendering-srv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Handlebars-HTML rendering microservice",
   "main": "lib/start.js",
   "author": "n-fuse GmbH",

@@ -1,3 +1,7 @@
+## 1.0.1 (June 2nd, 2023)
+
+- up dependencies
+
 ## 1.0.0 (June 2nd, 2023)
 
 - up all deps (inculding the optional fields and pluralization for protos)
