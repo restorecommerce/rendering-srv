@@ -9,28 +9,34 @@
     "fieldOptions": {
       "bufferFields": [
         {
-          "fieldPath": "messages.[0].payload.[0].templates"
+          "fieldPath": "messages.[0].payloads.[0].templates"
         },
         {
-          "fieldPath": "messages.[0].payload.[0].data"
+          "fieldPath": "messages.[0].payloads.[0].data"
         },
         {
-          "fieldPath": "messages.[0].payload.[0].options"
+          "fieldPath": "messages.[0].payloads.[0].options"
         },
         {
-          "fieldPath": "payload.[0].templates"
+          "fieldPath": "payloads.[0].templates"
         },
         {
-          "fieldPath": "payload.[0].data"
+          "fieldPath": "payloads.[0].data"
         },
         {
-          "fieldPath": "payload.[0].options"
+          "fieldPath": "payloads.[0].options"
         },
         {
-          "fieldPath": "response"
+          "fieldPath": "responses"
         },
         {
-          "fieldPath": "messages.[0].response"
+          "fieldPath": "messages.[0].responses"
+        },
+        {
+          "fieldPath": "decodedMsg.responses"
+        },
+        {
+          "fieldPath": "decodedMsg.payloads"
         }
       ]
     }
