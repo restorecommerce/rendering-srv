@@ -20,7 +20,7 @@
     "@restorecommerce/handlebars-helperized": "^1.0.3",
     "@restorecommerce/kafka-client": "^1.0.12",
     "@restorecommerce/logger": "^1.2.3",
-    "@restorecommerce/service-config": "^1.0.5",
+    "@restorecommerce/service-config": "^1.0.6",
     "cheerio": "^0.22.0",
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.1"
