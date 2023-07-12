@@ -16,7 +16,7 @@
   "dependencies": {
     "@restorecommerce/chassis-srv": "^1.2.2",
     "@restorecommerce/cluster-service": "^1.0.2",
-    "@restorecommerce/grpc-client": "^2.0.1",
+    "@restorecommerce/grpc-client": "^2.0.2",
     "@restorecommerce/handlebars-helperized": "^1.0.3",
     "@restorecommerce/kafka-client": "^1.0.12",
     "@restorecommerce/logger": "^1.2.3",
