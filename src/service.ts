@@ -111,7 +111,11 @@ export class Service {
   }
 
   unmarshallProtobufAny(msg: any): any {
-    return JSON.parse(msg.value.toString());
+    try {
+      return JSON.parse(msg.value.toString());
+    } catch (err) {
+      this.logger.error('Error unmarshalling one of payload template, data or options', { code: err.code, message: err.message, stack: err.stack });
+    }
   }
 
   private setAuthenticationHeaders(token) {
@@ -143,8 +147,8 @@ export class Service {
           const payloads = request.payloads;
 
           for (let payload of payloads) {
-            const templates = that.unmarshallProtobufAny(payload.templates);
-            const data = that.unmarshallProtobufAny(payload.data);
+            const templates = that.unmarshallProtobufAny(payload?.templates);
+            const data = that.unmarshallProtobufAny(payload?.data);
 
             // options are the handlebar-helperized options that can be
             // specified in the payload
@@ -167,7 +171,7 @@ export class Service {
             }
 
             // Modify to handle style for each template -> style
-            let style = payload.style_url;
+            let style = payload?.style_url;
             try {
               if (style) {
                 // if there is a tech user configured, pass the token
@@ -175,7 +179,7 @@ export class Service {
                 // else try to do a request with empty headers
                 const techUsersCfg = this.cfg.get('techUsers');
                 let headers;
-                if (techUsersCfg && techUsersCfg.length > 0) {
+                if (techUsersCfg?.length > 0) {
                   const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
                   headers = this.setAuthenticationHeaders(hbsUser.token);
                 }
@@ -201,8 +205,8 @@ export class Service {
             for (let key in templates) {
               // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
               const template = templates[key];
-              const body = template.body;
-              const layout = template.layout; // may be null
+              const body = template?.body;
+              const layout = template?.layout; // may be null
 
               let tplRenderer;
               if (renderingStrategy == Payload_Strategy.INLINE) {
