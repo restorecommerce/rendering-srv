@@ -1,6 +1,6 @@
 = Rendering Service
 
-https://travis-ci.org/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/travis/restorecommerce/rendering-srv/master.svg?style=flat-square[Build Status]]
+https://github.com/restorecommerce/rendering-srv/actions/workflows/build.yaml[image:https://img.shields.io/github/actions/workflow/status/restorecommerce/rendering-srv/build.yaml?style=flat-square[Build Status]]
 https://depfu.com/repos/github/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/depfu/dependencies/github/restorecommerce/rendering-srv?style=flat-square[Dependencies]]
 https://coveralls.io/github/restorecommerce/rendering-srv?branch=master[image:https://img.shields.io/coveralls/github/restorecommerce/rendering-srv/master.svg?style=flat-square[Coverage Status]]
 
@@ -9,6 +9,6 @@ A microservice for rendering HTML output from http://handlebarsjs.com/[Handlebar
 Please consult the documentation for using it:
 
 - *link:https://docs.restorecommerce.io/rendering-srv/index.html[Usage]*
-- *link:https://docs.restorecommerce.io/architecture/index.html[General Architecture]*
+- *link:https://docs.restorecommerce.io/architecture/index.html[Restorecommerce Architecture]*
 
 Part of the link:https://github.com/restorecommerce[Restorecommerce].
