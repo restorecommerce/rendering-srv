@@ -1,5 +1,5 @@
 ### Base
-FROM node:18.14.0-alpine as base
+FROM node:20.8.0-alpine3.18 as base
 ENV NO_UPDATE_NOTIFIER=true
 
 RUN apk add g++ make python3
@@ -33,9 +33,6 @@ COPY --chown=node:node --from=build $APP_HOME/lib $APP_HOME/lib
 EXPOSE 50051
 
 USER root
-RUN GRPC_HEALTH_PROBE_VERSION=v0.3.3 && \
-    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
-    chmod +x /bin/grpc_health_probe
 USER node
 
 HEALTHCHECK CMD ["/bin/grpc_health_probe", "-addr=:50051"]
