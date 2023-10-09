@@ -47,6 +47,10 @@
         {
           "fieldPath": "decodedMsg.payloads"
         }
+      ],
+      "omitFields": [
+        "response",
+        "responses"
       ]
     }
   },
