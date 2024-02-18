@@ -1,6 +1,4 @@
-'use strict';
-
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import * as cheerio from 'cheerio';
 // microservice
 import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
@@ -9,20 +7,21 @@ import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import * as chassis from '@restorecommerce/chassis-srv';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { createClient, RedisClientType } from 'redis';
 import { Logger } from 'winston';
 import {
   CommandInterfaceServiceDefinition,
   protoMetadata as commandInterfaceMeta
-} from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/commandinterface';
-import { BindConfig } from '@restorecommerce/chassis-srv/lib/microservice/transport/provider/grpc';
-import { HealthDefinition } from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/health/v1/health';
+} from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/commandinterface.js';
+import { BindConfig } from '@restorecommerce/chassis-srv/lib/microservice/transport/provider/grpc/index.js';
+import { HealthDefinition } from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/health/v1/health.js';
 import {
   protoMetadata as reflectionMeta
-} from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/reflection/v1alpha/reflection';
+} from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/reflection/v1alpha/reflection.js';
 import { ServerReflectionService } from 'nice-grpc-server-reflection';
-import { RenderRequest, RenderResponse, Payload_Strategy, protoMetadata as renderMeta } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering';
+import { RenderRequest, RenderResponse, Payload_Strategy, protoMetadata as renderMeta } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering.js';
+import fetch from 'node-fetch';
 
 registerProtoMeta(commandInterfaceMeta, reflectionMeta, renderMeta);
 
@@ -32,14 +31,6 @@ const CURR_DIR = process.cwd();
 const REL_PATH_HANDLEBARS = '/handlebars/';
 const HANDLEBARS_DIR = './handlebars';
 let customHelpersList: string[] = [];
-
-// node-fetch is now ESM only module
-// prevent TypeScript rewrite of async import() to require() in CJS projects
-const _importDynamic = new Function('modulePath', 'return import(modulePath)');
-const fetch = async (...args) => {
-  const { default: fetch } = await _importDynamic('node-fetch');
-  return fetch(...args);
-};
 
 export class Service {
   logger: Logger;
@@ -308,19 +299,4 @@ export class Worker {
   async stop(): Promise<any> {
     await this.service.stop();
   }
-}
-
-if (require.main === module) {
-  const worker = new Worker();
-  worker.start().then().catch((err) => {
-    console.error('startup error', err);
-    process.exit(1);
-  });
-
-  process.on('SIGINT', () => {
-    worker.stop().then().catch((err) => {
-      console.error('shutdown error', err);
-      process.exit(1);
-    });
-  });
 }

@@ -1,16 +1,12 @@
-'use strict';
-
-import * as mocha from 'mocha';
 import * as should from 'should';
-
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import * as http from 'http';
 import { createLogger } from '@restorecommerce/logger';
 import * as path from 'path';
 import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Worker } from '../lib/service';
+import { Worker } from '../src/service.js';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';
@@ -19,8 +15,6 @@ const CSS_CONTENT_TYPE = 'text/CSS';
 const staticServe = function (req: any, res: any): any {
   let fileLoc = path.resolve(process.cwd() + '/test/fixtures');
   fileLoc = path.join(fileLoc, req.url);
-
-  const extname = path.extname(fileLoc);
   const file = fs.readFileSync(fileLoc);
   res.writeHead(200, { 'Content-Type': 'text/css' });
   res.write(file);

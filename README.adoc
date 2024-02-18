@@ -12,3 +12,7 @@ Please consult the documentation for using it:
 - *link:https://docs.restorecommerce.io/architecture/index.html[Restorecommerce Architecture]*
 
 Part of the link:https://github.com/restorecommerce[Restorecommerce].
+
+== Contributing
+
+Read more in link:{docdir}/CONTRIBUTING.md[CONTRIBUTING.md]

@@ -1,7 +1,8 @@
-### Base
-FROM node:20.8.0-alpine3.18 as base
+### Build
+FROM node:20.8.0-alpine3.18 as build
 ENV NO_UPDATE_NOTIFIER=true
 
+RUN apk add --no-cache git
 RUN apk add g++ make python3
 
 USER node
@@ -11,10 +12,6 @@ WORKDIR $APP_HOME
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 
-
-### Build
-FROM base as build
-
 RUN npm ci
 
 COPY --chown=node:node . .
@@ -23,9 +20,16 @@ RUN npm run build
 
 
 ### Deployment
-FROM base as deployment
+FROM node:20.8.0-alpine3.18 as deployment
 
-RUN npm ci --only=production
+ENV NO_UPDATE_NOTIFIER=true
+
+USER node
+ARG APP_HOME=/home/node/srv
+WORKDIR $APP_HOME
+
+COPY package.json package.json
+COPY package-lock.json package-lock.json
 
 COPY --chown=node:node . $APP_HOME
 COPY --chown=node:node --from=build $APP_HOME/lib $APP_HOME/lib
