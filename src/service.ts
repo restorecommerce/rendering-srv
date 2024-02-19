@@ -1,13 +1,13 @@
-import * as _ from 'lodash-es';
-import * as cheerio from 'cheerio';
+import _ from 'lodash-es';
+import cheerio from 'cheerio';
 // microservice
 import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
 import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
-import * as chassis from '@restorecommerce/chassis-srv';
-import * as fs from 'node:fs';
+import { CommandInterface, Server, OffsetStore, buildReflectionService, Health } from '@restorecommerce/chassis-srv';
+import fs from 'node:fs';
 import { createClient, RedisClientType } from 'redis';
 import { Logger } from 'winston';
 import {
@@ -37,9 +37,9 @@ export class Service {
   cfg: any;
   events: Events;
   topics: any;
-  server: chassis.Server;
-  commandService: chassis.CommandInterface;
-  offsetStore: chassis.OffsetStore;
+  server: Server;
+  commandService: CommandInterface;
+  offsetStore: OffsetStore;
   constructor(cfg: any, logger: Logger) {
     this.cfg = cfg;
     this.logger = logger;
@@ -47,7 +47,7 @@ export class Service {
     this.events = new Events(this.cfg.get('events:kafka'), this.logger);
     this.topics = {};
 
-    this.server = new chassis.Server(cfg.get('server'), logger);
+    this.server = new Server(cfg.get('server'), logger);
   }
 
   /*
@@ -68,7 +68,7 @@ export class Service {
     const redisClient: RedisClientType<any, any> = createClient(redisConfig);
     redisClient.on('error', (err) => this.logger.error('Redis client error in subject store', err));
     await redisClient.connect();
-    this.commandService = new chassis.CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
+    this.commandService = new CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await this.server.bind(serviceNamesCfg.cis, {
       service: CommandInterfaceServiceDefinition,
@@ -77,7 +77,7 @@ export class Service {
 
     // Add ReflectionService
     const reflectionServiceName = serviceNamesCfg.reflection;
-    const reflectionService = chassis.buildReflectionService([
+    const reflectionService = buildReflectionService([
       { descriptor: commandInterfaceMeta.fileDescriptor }
     ]);
     await this.server.bind(reflectionServiceName, {
@@ -87,7 +87,7 @@ export class Service {
 
     await this.server.bind(serviceNamesCfg.health, {
       service: HealthDefinition,
-      implementation: new chassis.Health(this.commandService)
+      implementation: new Health(this.commandService)
     } as BindConfig<HealthDefinition>);
 
     await this.server.start();
@@ -122,7 +122,7 @@ export class Service {
   async subscribeTopics(): Promise<any> {
     this.logger.info('Subscribing Kafka topics');
     await this.events.start();
-    this.offsetStore = new chassis.OffsetStore(this.events, this.cfg, this.logger);
+    this.offsetStore = new OffsetStore(this.events, this.cfg, this.logger);
     const that = this;
     const listener = async (msg: any, context: any, config: any, eventName: string): Promise<any> => {
       const response = [];

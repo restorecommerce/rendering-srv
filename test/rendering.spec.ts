@@ -1,12 +1,12 @@
-import * as should from 'should';
-import * as fs from 'node:fs';
-import * as http from 'http';
+import should from 'should';
+import fs from 'node:fs';
+import http from 'http';
 import { createLogger } from '@restorecommerce/logger';
-import * as path from 'path';
+import path from 'path';
 import Renderer from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Worker } from '../src/service.js';
+import { Worker } from '../src/service';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';
