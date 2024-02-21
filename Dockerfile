@@ -2,9 +2,6 @@
 FROM node:20.8.0-alpine3.18 as build
 ENV NO_UPDATE_NOTIFIER=true
 
-RUN apk add --no-cache git
-RUN apk add g++ make python3
-
 USER node
 ARG APP_HOME=/home/node/srv
 WORKDIR $APP_HOME
