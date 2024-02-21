@@ -1,9 +1,9 @@
 import _ from 'lodash-es';
-import cheerio from 'cheerio';
+import pkg from 'cheerio';
 // microservice
 import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
-import Renderer from '@restorecommerce/handlebars-helperized';
+import { Renderer } from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 // gRPC / command-interface
 import { CommandInterface, Server, OffsetStore, buildReflectionService, Health } from '@restorecommerce/chassis-srv';
@@ -25,6 +25,7 @@ import fetch from 'node-fetch';
 
 registerProtoMeta(commandInterfaceMeta, reflectionMeta, renderMeta);
 
+const { load } = pkg;
 const RENDER_REQ_EVENT = 'renderRequest';
 // we store here the handlebars helpers
 const CURR_DIR = process.cwd();
@@ -215,7 +216,7 @@ export class Service {
                 response.push(that.marshallProtobufAny({ error: 'Error while rendering template' }));
               }
               if (renderingStrategy == Payload_Strategy.COPY && style) {
-                const html = cheerio.load(rendered);
+                const html = load(rendered);
                 html('html').append('<style></style>');
                 html('style').attr('type', 'text/css');
                 html('style').append(style);

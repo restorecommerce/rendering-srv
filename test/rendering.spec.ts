@@ -1,12 +1,12 @@
 import should from 'should';
 import fs from 'node:fs';
-import http from 'http';
+import { createServer } from 'http';
 import { createLogger } from '@restorecommerce/logger';
 import path from 'path';
-import Renderer from '@restorecommerce/handlebars-helperized';
+import { Renderer } from '@restorecommerce/handlebars-helperized';
 import { createServiceConfig } from '@restorecommerce/service-config';
 import { Events, Topic } from '@restorecommerce/kafka-client';
-import { Worker } from '../src/service';
+import { Worker } from '../src/service.js';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';
@@ -119,7 +119,6 @@ describe('rendering srv testing', () => {
       };
 
       const renderer = new Renderer(msgTpl, '', '', {}, []);
-
       validate = () => {
         should.exist(responseID);
         should.exist(responses);
@@ -277,7 +276,7 @@ describe('rendering srv testing', () => {
     it('should render with external stylesheet', async () => {
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
       // setting static server to serve templates over HTTP
-      const httpServer = http.createServer(staticServe);
+      const httpServer = createServer(staticServe);
       httpServer.listen(cfg.get('static_server:port'));
 
       const root = cfg.get('templates:root');
@@ -415,7 +414,7 @@ describe('rendering srv testing', () => {
     it('Should render CSS inline on complex template', async () => {
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
       // setting static server to serve templates over HTTP
-      const httpServer = http.createServer(staticServe);
+      const httpServer = createServer(staticServe);
       httpServer.listen(cfg.get('static_server:port'));
 
       const root = cfg.get('templates:root');
