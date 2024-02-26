@@ -57,10 +57,10 @@ export class Service {
   async start(): Promise<any> {
     // read all file names from the handlebars folder
     let absolutePath: string;
-    fs.readdirSync(HANDLEBARS_DIR).forEach((file) => {
+    for (let file of fs.readdirSync(HANDLEBARS_DIR)) {
       absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
       customHelpersList.push(absolutePath);
-    });
+    }
 
     await this.subscribeTopics();
     // init redis client for subject index
