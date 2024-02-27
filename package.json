@@ -49,7 +49,7 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "start": "node lib/start.js",
+    "start": "node lib/start.cjs",
     "dev": "cross-env NODE_ENV=development nodemon --watch './src/**/*.ts' --exec node --loader ts-node/esm ./src/start.ts",
     "test": "c8 --reporter=text npm run mocha",
     "lint": "eslint --fix src --ext .ts",
@@ -59,7 +59,7 @@
     "lcov-report": "c8 report --reporter=lcov",
     "coveralls": "c8 report --reporter=text-lcov | coveralls",
     "tsctests": "tsc -d -p tsconfig.test.json",
-    "build:tsc": "esbuild ./src/start.ts --bundle --platform=node --outfile=lib/start.js --minify --tree-shaking=true --sourcemap=inline",
+    "build:tsc": "esbuild ./src/start.ts --bundle --platform=node --outfile=lib/start.cjs --minify --tree-shaking=true --sourcemap=inline",
     "build:clean": "rimraf lib",
     "build": "npm-run-all lint build:clean build:tsc"
   },
