@@ -64,3 +64,10 @@ jobs:
       - run: npx semantic-release@22.0.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: upgrade-services.yaml
+          ref: master
+          repo: restorecommerce/charts
+          token: "${{ secrets.CHARTS_WORKFLOW_TOKEN }}"
