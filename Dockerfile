@@ -30,6 +30,7 @@ COPY package-lock.json package-lock.json
 
 COPY --chown=node:node ./cfg $APP_HOME/cfg
 COPY --chown=node:node --from=build $APP_HOME/lib $APP_HOME/lib
+COPY --chown=node:node --from=build $APP_HOME/handlebars $APP_HOME/handlebars
 
 EXPOSE 50051
 
