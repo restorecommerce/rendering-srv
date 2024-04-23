@@ -58,8 +58,10 @@ export class Service {
     // read all file names from the handlebars folder
     let absolutePath: string;
     for (let file of fs.readdirSync(HANDLEBARS_DIR)) {
-      absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
-      customHelpersList.push(absolutePath);
+      if (file.endsWith('.cjs')) {
+        absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
+        customHelpersList.push(absolutePath);
+      }
     }
 
     await this.subscribeTopics();
@@ -209,6 +211,7 @@ export class Service {
               }
               let rendered;
               try {
+                await tplRenderer?.waitLoad();
                 rendered = tplRenderer.render(data);  // rendered HTML string
               } catch (err) {
                 this.logger.error('Error while rendering template:', template);
