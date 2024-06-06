@@ -288,10 +288,6 @@ export class Worker {
     if (!cfg) {
       cfg = createServiceConfig(process.cwd());
       const loggerCfg = cfg.get('logger');
-      loggerCfg.esTransformer = (msg) => {
-        msg.fields = JSON.stringify(msg.fields);
-        return msg;
-      };
       logger = createLogger(loggerCfg);
     }
 
