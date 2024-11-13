@@ -126,6 +126,8 @@ export class Service {
     this.logger.info('Subscribing Kafka topics');
     await this.events.start();
     this.offsetStore = new OffsetStore(this.events, this.cfg, this.logger);
+    const reply = this.reply;
+    const commandService = this.commandService;
     const logger = this.logger;
     const marshallProtobufAny = this.marshallProtobufAny;
     const unmarshallProtobufAny = this.unmarshallProtobufAny;
@@ -239,9 +241,9 @@ export class Service {
             }
           }
         }
-        await that.reply(id, response);
+        await reply(id, response);
       } else {  // commands
-        await that.commandService.command(msg, context);
+        await commandService.command(msg, context);
       }
     };
 
