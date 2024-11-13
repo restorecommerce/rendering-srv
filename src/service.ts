@@ -1,5 +1,5 @@
 import _ from 'lodash-es';
-import pkg from 'cheerio';
+import * as pkg from 'cheerio';
 // microservice
 import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
 import { createLogger } from '@restorecommerce/logger';
@@ -31,7 +31,7 @@ const RENDER_REQ_EVENT = 'renderRequest';
 const CURR_DIR = process.cwd();
 const REL_PATH_HANDLEBARS = '/handlebars/';
 const HANDLEBARS_DIR = './handlebars';
-let customHelpersList: string[] = [];
+const customHelpersList: string[] = [];
 
 export class Service {
   logger: Logger;
@@ -57,7 +57,7 @@ export class Service {
   async start(): Promise<any> {
     // read all file names from the handlebars folder
     let absolutePath: string;
-    for (let file of fs.readdirSync(HANDLEBARS_DIR)) {
+    for (const file of fs.readdirSync(HANDLEBARS_DIR)) {
       if (file.endsWith('.cjs')) {
         absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
         customHelpersList.push(absolutePath);
@@ -126,42 +126,44 @@ export class Service {
     this.logger.info('Subscribing Kafka topics');
     await this.events.start();
     this.offsetStore = new OffsetStore(this.events, this.cfg, this.logger);
-    const that = this;
+    const logger = this.logger;
+    const marshallProtobufAny = this.marshallProtobufAny;
+    const unmarshallProtobufAny = this.unmarshallProtobufAny;
     const listener = async (msg: any, context: any, config: any, eventName: string): Promise<any> => {
       const response = [];
       if (eventName == RENDER_REQ_EVENT) {
-        that.logger.info('Rendering request received');
+        logger.info('Rendering request received');
         const request = msg as RenderRequest;
         const id: string = request.id;
         if (!request || !request.payloads || request.payloads.length == 0) {
           const error = { error: 'Missing payload' };
-          response.push(that.marshallProtobufAny(error));
+          response.push(marshallProtobufAny(error));
         } else {
 
           const payloads = request.payloads;
 
-          for (let payload of payloads) {
-            const templates = that.unmarshallProtobufAny(payload?.templates);
-            const data = that.unmarshallProtobufAny(payload?.data);
+          for (const payload of payloads) {
+            const templates = unmarshallProtobufAny(payload?.templates);
+            const data = unmarshallProtobufAny(payload?.data);
 
             // options are the handlebar-helperized options that can be
             // specified in the payload
             let options: any;
             if (!!payload.options && !_.isEmpty(payload.options) && !_.isEmpty(payload.options.value)) {
-              options = that.unmarshallProtobufAny(payload.options);
+              options = unmarshallProtobufAny(payload.options);
             } else {
               options = {};
             }
 
-            let renderingStrategy = payload.strategy || Payload_Strategy.INLINE;
+            const renderingStrategy = payload.strategy || Payload_Strategy.INLINE;
             if (!templates || _.keys(templates).length == 0) {
               const error = { error: 'Missing templates' };
-              response.push(that.marshallProtobufAny(error));
+              response.push(marshallProtobufAny(error));
             }
 
             if (!data || _.keys(data).length == 0) {
               const error = { error: 'Missing data' };
-              response.push(that.marshallProtobufAny(error));
+              response.push(marshallProtobufAny(error));
             }
 
             // Modify to handle style for each template -> style
@@ -179,24 +181,24 @@ export class Service {
                 }
                 const tplResponse = await fetch(style, { headers });
                 if (!tplResponse.ok) {
-                  that.logger.info('Could not retrieve CSS file from provided URL');
+                  logger.info('Could not retrieve CSS file from provided URL');
                 } else {
                   style = await tplResponse.text();
                 }
               }
             } catch (err) {
-              that.logger.error('Error occurred while retrieving style sheet');
-              response.push(that.marshallProtobufAny({ error: err.message }));
+              logger.error('Error occurred while retrieving style sheet');
+              response.push(marshallProtobufAny({ error: err.message }));
             }
 
             // read the input content type
             const contType = payload.content_type;
             if (!contType) {
-              response.push(that.marshallProtobufAny({ error: 'Missing content-type' }));
+              response.push(marshallProtobufAny({ error: 'Missing content-type' }));
             }
 
             const responseObj = {};
-            for (let key in templates) {
+            for (const key in templates) {
               // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
               const template = templates[key];
               const body = template?.body;
@@ -216,7 +218,7 @@ export class Service {
               } catch (err) {
                 this.logger.error('Error while rendering template:', template);
                 this.logger.error('Error:', err);
-                response.push(that.marshallProtobufAny({ error: 'Error while rendering template' }));
+                response.push(marshallProtobufAny({ error: 'Error while rendering template' }));
               }
               if (renderingStrategy == Payload_Strategy.COPY && style) {
                 const html = load(rendered);
@@ -233,7 +235,7 @@ export class Service {
               }
             }
             if (!_.isEmpty(responseObj)) {
-              response.push(that.marshallProtobufAny(responseObj));
+              response.push(marshallProtobufAny(responseObj));
             }
           }
         }
@@ -245,7 +247,7 @@ export class Service {
 
     const kafkaCfg = this.cfg.get('events:kafka');
     const topicTypes = _.keys(kafkaCfg.topics);
-    for (let topicType of topicTypes) {
+    for (const topicType of topicTypes) {
       const topicName = kafkaCfg.topics[topicType].topic;
       this.topics[topicType] = await this.events.topic(topicName);
       const offsetValue = await this.offsetStore.getOffset(topicName);
@@ -253,7 +255,7 @@ export class Service {
         topicName, offsetValue);
       if (kafkaCfg.topics[topicType].events) {
         const eventNames = kafkaCfg.topics[topicType].events;
-        for (let eventName of eventNames) {
+        for (const eventName of eventNames) {
           await this.topics[topicType].on(eventName, listener,
             { startingOffset: offsetValue });
         }
