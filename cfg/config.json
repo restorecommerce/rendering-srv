@@ -94,7 +94,8 @@
         "command": {
           "topic": "io.restorecommerce.command",
           "events": [
-            "healthCheckCommand"
+            "healthCheckCommand",
+            "versionCommand"
           ]
         }
       }

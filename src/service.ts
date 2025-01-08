@@ -1,15 +1,25 @@
 import _ from 'lodash-es';
 import * as pkg from 'cheerio';
 // microservice
-import { Events, registerProtoMeta } from '@restorecommerce/kafka-client';
-import { createLogger } from '@restorecommerce/logger';
+import { Events, registerProtoMeta, Topic } from '@restorecommerce/kafka-client';
+import {
+  createLogger,
+  type Logger
+} from '@restorecommerce/logger';
 import { Renderer } from '@restorecommerce/handlebars-helperized';
-import { createServiceConfig } from '@restorecommerce/service-config';
-// gRPC / command-interface
-import { CommandInterface, Server, OffsetStore, buildReflectionService, Health } from '@restorecommerce/chassis-srv';
+import {
+  createServiceConfig,
+  type ServiceConfig
+} from '@restorecommerce/service-config';
+import {
+  CommandInterface,
+  Server,
+  OffsetStore,
+  buildReflectionService,
+  Health
+} from '@restorecommerce/chassis-srv';
 import fs from 'node:fs';
 import { createClient, RedisClientType } from 'redis';
-import { Logger } from 'winston';
 import {
   CommandInterfaceServiceDefinition,
   protoMetadata as commandInterfaceMeta
@@ -20,13 +30,19 @@ import {
   protoMetadata as reflectionMeta
 } from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/reflection/v1alpha/reflection.js';
 import { ServerReflectionService } from 'nice-grpc-server-reflection';
-import { RenderRequest, RenderResponse, Payload_Strategy, protoMetadata as renderMeta } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering.js';
+import {
+  RenderRequest,
+  RenderResponse,
+  Payload_Strategy,
+  protoMetadata as renderMeta
+} from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering.js';
 import fetch from 'node-fetch';
+
+type Handler = (msg: any, context: any, config: any, eventName: string) => Promise<any>
 
 registerProtoMeta(commandInterfaceMeta, reflectionMeta, renderMeta);
 
 const { load } = pkg;
-const RENDER_REQ_EVENT = 'renderRequest';
 // we store here the handlebars helpers
 const CURR_DIR = process.cwd();
 const REL_PATH_HANDLEBARS = '/handlebars/';
@@ -34,21 +50,139 @@ const HANDLEBARS_DIR = './handlebars';
 const customHelpersList: string[] = [];
 
 export class Service {
-  logger: Logger;
-  cfg: any;
-  events: Events;
-  topics: any;
-  server: Server;
-  commandService: CommandInterface;
-  offsetStore: OffsetStore;
-  constructor(cfg: any, logger: Logger) {
-    this.cfg = cfg;
-    this.logger = logger;
+  protected readonly listeners = new Map<string, Handler>();
+  protected commandService: CommandInterface;
+  protected offsetStore: OffsetStore;
+  
+  constructor(
+    protected readonly cfg: ServiceConfig,
+    protected readonly logger: Logger,
+    protected readonly events: Events = new Events(cfg.get('events:kafka'), logger),
+    protected readonly server: Server = new Server(cfg.get('server'), logger),
+    protected readonly topics: Record<string, Topic> = {},
+  ) {
+    this.listeners.set('renderRequest', (...args) => this.onRenderRequest(...args));
+    this.listeners.set('healthCheckCommand', (...args) => this.onCommand(...args));
+    this.listeners.set('versionCommand', (...args) => this.onCommand(...args));
+  }
 
-    this.events = new Events(this.cfg.get('events:kafka'), this.logger);
-    this.topics = {};
+  private async onRenderRequest(
+    msg: any,
+    context: any,
+    config: any,
+    eventName: string
+  ): Promise<any> {
+    this.logger.info('Rendering request received');
+    const response = new Array<any>();
+    const request = msg as RenderRequest;
+    const id: string = request.id;
+    if (!request?.payloads?.length) {
+      const error = { error: 'Missing payload' };
+      response.push(this.marshallProtobufAny(error));
+    } else {
+      for (const payload of request.payloads) {
+        const templates = this.unmarshallProtobufAny(payload?.templates);
+        const data = this.unmarshallProtobufAny(payload?.data);
+        // options are the handlebar-helperized options that can be
+        // specified in the payload
+        const options = !_.isEmpty(payload?.options?.value) ? this.unmarshallProtobufAny(payload.options) : {};
+        const renderingStrategy = payload.strategy ?? Payload_Strategy.INLINE;
+        if (!templates || _.keys(templates).length === 0) {
+          const error = { error: 'Missing templates' };
+          response.push(this.marshallProtobufAny(error));
+        }
 
-    this.server = new Server(cfg.get('server'), logger);
+        if (!data || _.keys(data).length === 0) {
+          const error = { error: 'Missing data' };
+          response.push(this.marshallProtobufAny(error));
+        }
+
+        // Modify to handle style for each template -> style
+        let style = payload?.style_url;
+        try {
+          if (style) {
+            // if there is a tech user configured, pass the token
+            // in the headers when requesting the css file
+            // else try to do a request with empty headers
+            const techUsersCfg = this.cfg.get('techUsers');
+            let headers;
+            if (techUsersCfg?.length > 0) {
+              const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
+              headers = this.setAuthenticationHeaders(hbsUser.token);
+            }
+            const tplResponse = await fetch(style, { headers });
+            if (!tplResponse.ok) {
+              this.logger.info('Could not retrieve CSS file from provided URL');
+            } else {
+              style = await tplResponse.text();
+            }
+          }
+        } catch (err: any) {
+          this.logger.error('Error occurred while retrieving style sheet');
+          response.push(this.marshallProtobufAny({ error: err.message }));
+        }
+
+        // read the input content type
+        if (!payload.content_type) {
+          response.push(this.marshallProtobufAny({ error: 'Missing content-type' }));
+        }
+
+        const responseObj: Record<string, any> = {};
+        for (const key in templates) {
+          // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
+          const template = templates[key];
+          const body = template?.body;
+          const layout = template?.layout; // may be null
+
+          let tplRenderer;
+          if (renderingStrategy === Payload_Strategy.INLINE) {
+            tplRenderer = new Renderer(body, layout, style, options, customHelpersList);
+          } else {
+            // do not inline!
+            tplRenderer = new Renderer(body, layout, null, options, customHelpersList);
+          }
+
+          let rendered;
+          try {
+            await tplRenderer?.waitLoad();
+            rendered = tplRenderer.render(data); // rendered HTML string
+          } catch (err: any) {
+            this.logger.error('Error while rendering template:', template);
+            this.logger.error('Error:', err);
+            response.push(this.marshallProtobufAny({ error: `Error while rendering template: ${err}` }));
+          }
+
+          if (renderingStrategy === Payload_Strategy.COPY && style) {
+            const html = load(rendered);
+            html('html').append('<style></style>');
+            html('style').attr('type', 'text/css');
+            html('style').append(style);
+            rendered = html.html();
+          }
+
+          if (rendered) {
+            responseObj[key] = rendered;
+          }
+
+          if (payload.content_type) {
+            Object.assign(responseObj, { content_type: payload.content_type });
+          }
+        }
+        if (!_.isEmpty(responseObj)) {
+          response.push(this.marshallProtobufAny(responseObj));
+        }
+      }
+    }
+    await this.reply(id, response);
+  }
+
+  private async onCommand(
+    msg: any,
+    context: any,
+    config: any,
+    eventName: string
+  ): Promise<any> {
+    await this.commandService.command(msg, context);
   }
 
   /*
@@ -97,22 +231,25 @@ export class Service {
     this.logger.info('Service started successfully');
   }
 
-  marshallProtobufAny(msg: any): any {
+  public marshallProtobufAny(msg: any): any {
     return {
       type_url: 'rendering',
-      value: Buffer.from(JSON.stringify(msg))
+      value: Buffer.from(JSON.stringify(msg)),
     };
   }
 
-  unmarshallProtobufAny(msg: any): any {
+  public unmarshallProtobufAny(msg: any): any {
     try {
       return JSON.parse(msg.value.toString());
-    } catch (err) {
-      this.logger.error('Error unmarshalling one of payload template, data or options', { code: err.code, message: err.message, stack: err.stack });
+    } catch (err: any) {
+      this.logger.error(
+        'Error unmarshalling one of payload template, data or options',
+        { code: err.code, message: err.message, stack: err.stack }
+      );
     }
   }
 
-  private setAuthenticationHeaders(token) {
+  private setAuthenticationHeaders(token: string) {
     return {
       Authorization: `Bearer ${token}`
     };
@@ -126,126 +263,6 @@ export class Service {
     this.logger.info('Subscribing Kafka topics');
     await this.events.start();
     this.offsetStore = new OffsetStore(this.events, this.cfg, this.logger);
-    const reply = this.reply;
-    const commandService = this.commandService;
-    const logger = this.logger;
-    const marshallProtobufAny = this.marshallProtobufAny;
-    const unmarshallProtobufAny = this.unmarshallProtobufAny;
-    const listener = async (msg: any, context: any, config: any, eventName: string): Promise<any> => {
-      const response = [];
-      if (eventName == RENDER_REQ_EVENT) {
-        logger.info('Rendering request received');
-        const request = msg as RenderRequest;
-        const id: string = request.id;
-        if (!request || !request.payloads || request.payloads.length == 0) {
-          const error = { error: 'Missing payload' };
-          response.push(marshallProtobufAny(error));
-        } else {
-
-          const payloads = request.payloads;
-
-          for (const payload of payloads) {
-            const templates = unmarshallProtobufAny(payload?.templates);
-            const data = unmarshallProtobufAny(payload?.data);
-
-            // options are the handlebar-helperized options that can be
-            // specified in the payload
-            let options: any;
-            if (!!payload.options && !_.isEmpty(payload.options) && !_.isEmpty(payload.options.value)) {
-              options = unmarshallProtobufAny(payload.options);
-            } else {
-              options = {};
-            }
-
-            const renderingStrategy = payload.strategy || Payload_Strategy.INLINE;
-            if (!templates || _.keys(templates).length == 0) {
-              const error = { error: 'Missing templates' };
-              response.push(marshallProtobufAny(error));
-            }
-
-            if (!data || _.keys(data).length == 0) {
-              const error = { error: 'Missing data' };
-              response.push(marshallProtobufAny(error));
-            }
-
-            // Modify to handle style for each template -> style
-            let style = payload?.style_url;
-            try {
-              if (style) {
-                // if there is a tech user configured, pass the token
-                // in the headers when requesting the css file
-                // else try to do a request with empty headers
-                const techUsersCfg = this.cfg.get('techUsers');
-                let headers;
-                if (techUsersCfg?.length > 0) {
-                  const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
-                  headers = this.setAuthenticationHeaders(hbsUser.token);
-                }
-                const tplResponse = await fetch(style, { headers });
-                if (!tplResponse.ok) {
-                  logger.info('Could not retrieve CSS file from provided URL');
-                } else {
-                  style = await tplResponse.text();
-                }
-              }
-            } catch (err) {
-              logger.error('Error occurred while retrieving style sheet');
-              response.push(marshallProtobufAny({ error: err.message }));
-            }
-
-            // read the input content type
-            const contType = payload.content_type;
-            if (!contType) {
-              response.push(marshallProtobufAny({ error: 'Missing content-type' }));
-            }
-
-            const responseObj = {};
-            for (const key in templates) {
-              // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
-              const template = templates[key];
-              const body = template?.body;
-              const layout = template?.layout; // may be null
-
-              let tplRenderer;
-              if (renderingStrategy == Payload_Strategy.INLINE) {
-                tplRenderer = new Renderer(body, layout, style, options, customHelpersList);
-              } else {
-                // do not inline!
-                tplRenderer = new Renderer(body, layout, null, options, customHelpersList);
-              }
-              let rendered;
-              try {
-                await tplRenderer?.waitLoad();
-                rendered = tplRenderer.render(data);  // rendered HTML string
-              } catch (err) {
-                this.logger.error('Error while rendering template:', template);
-                this.logger.error('Error:', err);
-                response.push(marshallProtobufAny({ error: 'Error while rendering template' }));
-              }
-              if (renderingStrategy == Payload_Strategy.COPY && style) {
-                const html = load(rendered);
-                html('html').append('<style></style>');
-                html('style').attr('type', 'text/css');
-                html('style').append(style);
-                rendered = html.html();
-              }
-              if (rendered) {
-                responseObj[key] = rendered;
-              }
-              if (contType) {
-                Object.assign(responseObj, { content_type: contType });
-              }
-            }
-            if (!_.isEmpty(responseObj)) {
-              response.push(marshallProtobufAny(responseObj));
-            }
-          }
-        }
-        await reply(id, response);
-      } else {  // commands
-        await commandService.command(msg, context);
-      }
-    };
 
     const kafkaCfg = this.cfg.get('events:kafka');
     const topicTypes = _.keys(kafkaCfg.topics);
@@ -258,12 +275,14 @@ export class Service {
       if (kafkaCfg.topics[topicType].events) {
         const eventNames = kafkaCfg.topics[topicType].events;
         for (const eventName of eventNames) {
-          await this.topics[topicType].on(eventName, listener,
-            { startingOffset: offsetValue });
+          await this.topics[topicType].on(
+            eventName,
+            this.listeners.get(eventName),
+            { startingOffset: offsetValue }
+          );
         }
       }
     }
-
   }
 
   async reply(requestID: string, responses: Array<any>): Promise<any> {
@@ -283,7 +302,7 @@ export class Service {
 
 
 export class Worker {
-  service: Service;
+  public service: Service;
   constructor() { }
   /**
    * starting/stopping the actual server

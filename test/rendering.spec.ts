@@ -1,3 +1,4 @@
+import {} from 'mocha';
 import should from 'should';
 import fs from 'node:fs';
 import { createServer } from 'http';
@@ -40,6 +41,7 @@ describe('rendering srv testing', () => {
   let responseID: string;
   let responses: Array<any>;
   let topic: Topic;
+
   before(async function start(): Promise<void> {
     cfg = createServiceConfig(process.cwd() + '/test');
     logger = createLogger(cfg.get('logger'));
