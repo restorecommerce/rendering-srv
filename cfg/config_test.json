@@ -1,0 +1,51 @@
+{
+  "events": {
+    "kafka": {
+      "groupId": "rendering-srv-test",
+      "kafka": {
+        "clientId": "rendering-srv-test"
+      },
+      "latestOffset": true
+    }
+  },
+  "templates": {
+    "prefix": "http://localhost:8080/",
+    "root": "test/fixtures/",
+    "simple_message": {
+      "body": "test_message.hbs"
+    },
+    "message_with_layout": {
+      "body": "test_message_body.hbs",
+      "layout": "test_message_layout.hbs"
+    },
+    "message_with_style": {
+      "body": "test_message_body.hbs",
+      "layout": "test_message_layout.hbs",
+      "style": "css/test.css"
+    },
+    "message_with_inline_css": {
+      "body": "test_message_body_inline_css.hbs",
+      "layout": "test_message_layout_inline_css.hbs",
+      "style": "css/test_message_body_inline_css.css"
+    },
+    "custom_helper_list": {
+      "body": "custom_helper_list.hbs"
+    },
+    "custom_helper_eq": {
+      "body": "test_message_body_eq.hbs"
+    }
+  },
+  "static_server": {
+    "prefix": "http://localhost",
+    "port": 8088
+  },
+  "server": {
+    "transports": [
+      {
+        "name": "grpcRendering",
+        "provider": "grpc",
+        "addr": "localhost:50051"
+      }
+    ]
+  }
+}

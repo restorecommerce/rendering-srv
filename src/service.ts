@@ -1,14 +1,11 @@
-import _ from 'lodash-es';
 import * as pkg from 'cheerio';
 // microservice
 import { Events, registerProtoMeta, Topic } from '@restorecommerce/kafka-client';
 import {
-  createLogger,
   type Logger
 } from '@restorecommerce/logger';
 import { Renderer } from '@restorecommerce/handlebars-helperized';
 import {
-  createServiceConfig,
   type ServiceConfig
 } from '@restorecommerce/service-config';
 import {
@@ -31,14 +28,17 @@ import {
 } from '@restorecommerce/rc-grpc-clients/dist/generated-server/grpc/reflection/v1alpha/reflection.js';
 import { ServerReflectionService } from 'nice-grpc-server-reflection';
 import {
-  RenderRequest,
+  RenderRequestList,
   RenderResponse,
-  Payload_Strategy,
-  protoMetadata as renderMeta
+  RenderResponseList,
+  RenderRequest_Strategy,
+  protoMetadata as renderMeta,
+  RenderResult_Bodies
 } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering.js';
-import fetch from 'node-fetch';
+import { Subject } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/auth.js';
+import { unmarshallProtobufAny } from './utils.js';
 
-type Handler = (msg: any, context: any, config: any, eventName: string) => Promise<any>
+type Handler = (msg: any, context?: any, config?: any, eventName?: string) => Promise<any>
 
 registerProtoMeta(commandInterfaceMeta, reflectionMeta, renderMeta);
 
@@ -49,10 +49,11 @@ const REL_PATH_HANDLEBARS = '/handlebars/';
 const HANDLEBARS_DIR = './handlebars';
 const customHelpersList: string[] = [];
 
-export class Service {
+export class RenderingService {
   protected readonly listeners = new Map<string, Handler>();
   protected commandService: CommandInterface;
   protected offsetStore: OffsetStore;
+  protected readonly techUser: Subject;
   
   constructor(
     protected readonly cfg: ServiceConfig,
@@ -61,126 +62,177 @@ export class Service {
     protected readonly server: Server = new Server(cfg.get('server'), logger),
     protected readonly topics: Record<string, Topic> = {},
   ) {
+    this.techUser = this.cfg.get('techUser');
     this.listeners.set('renderRequest', (...args) => this.onRenderRequest(...args));
     this.listeners.set('healthCheckCommand', (...args) => this.onCommand(...args));
     this.listeners.set('versionCommand', (...args) => this.onCommand(...args));
   }
 
-  private async onRenderRequest(
-    msg: any,
-    context: any,
-    config: any,
-    eventName: string
-  ): Promise<any> {
-    this.logger.info('Rendering request received');
-    const response = new Array<any>();
-    const request = msg as RenderRequest;
-    const id: string = request.id;
-    if (!request?.payloads?.length) {
-      const error = { error: 'Missing payload' };
-      response.push(this.marshallProtobufAny(error));
-    } else {
-      for (const payload of request.payloads) {
-        const templates = this.unmarshallProtobufAny(payload?.templates);
-        const data = this.unmarshallProtobufAny(payload?.data);
-        // options are the handlebar-helperized options that can be
-        // specified in the payload
-        const options = !_.isEmpty(payload?.options?.value) ? this.unmarshallProtobufAny(payload.options) : {};
-        const renderingStrategy = payload.strategy ?? Payload_Strategy.INLINE;
-        if (!templates || _.keys(templates).length === 0) {
-          const error = { error: 'Missing templates' };
-          response.push(this.marshallProtobufAny(error));
-        }
-
-        if (!data || _.keys(data).length === 0) {
-          const error = { error: 'Missing data' };
-          response.push(this.marshallProtobufAny(error));
-        }
-
-        // Modify to handle style for each template -> style
-        let style = payload?.style_url;
-        try {
-          if (style) {
-            // if there is a tech user configured, pass the token
-            // in the headers when requesting the css file
-            // else try to do a request with empty headers
-            const techUsersCfg = this.cfg.get('techUsers');
-            let headers;
-            if (techUsersCfg?.length > 0) {
-              const hbsUser = _.find(techUsersCfg, { id: 'hbs_user' });
-              headers = this.setAuthenticationHeaders(hbsUser.token);
-            }
-            const tplResponse = await fetch(style, { headers });
-            if (!tplResponse.ok) {
-              this.logger.info('Could not retrieve CSS file from provided URL');
-            } else {
-              style = await tplResponse.text();
-            }
-          }
-        } catch (err: any) {
-          this.logger.error('Error occurred while retrieving style sheet');
-          response.push(this.marshallProtobufAny({ error: err.message }));
-        }
-
-        // read the input content type
-        if (!payload.content_type) {
-          response.push(this.marshallProtobufAny({ error: 'Missing content-type' }));
-        }
-
-        const responseObj: Record<string, any> = {};
-        for (const key in templates) {
-          // key-value {'tplName': HBS tpl}, {'layout': HBS tpl}
-          const template = templates[key];
-          const body = template?.body;
-          const layout = template?.layout; // may be null
-
-          let tplRenderer;
-          if (renderingStrategy === Payload_Strategy.INLINE) {
-            tplRenderer = new Renderer(body, layout, style, options, customHelpersList);
-          } else {
-            // do not inline!
-            tplRenderer = new Renderer(body, layout, null, options, customHelpersList);
-          }
-
-          let rendered;
-          try {
-            await tplRenderer?.waitLoad();
-            rendered = tplRenderer.render(data); // rendered HTML string
-          } catch (err: any) {
-            this.logger.error('Error while rendering template:', template);
-            this.logger.error('Error:', err);
-            response.push(this.marshallProtobufAny({ error: `Error while rendering template: ${err}` }));
-          }
-
-          if (renderingStrategy === Payload_Strategy.COPY && style) {
-            const html = load(rendered);
-            html('html').append('<style></style>');
-            html('style').attr('type', 'text/css');
-            html('style').append(style);
-            rendered = html.html();
-          }
-
-          if (rendered) {
-            responseObj[key] = rendered;
-          }
-
-          if (payload.content_type) {
-            Object.assign(responseObj, { content_type: payload.content_type });
-          }
-        }
-        if (!_.isEmpty(responseObj)) {
-          response.push(this.marshallProtobufAny(responseObj));
-        }
+  private async fetchStyle(url: string): Promise<string> {
+    if (url) {
+      // if there is a tech user configured, pass the token
+      // in the headers when requesting the css file
+      // else try to do a request with empty headers
+      const headers = this.techUser?.token ? {
+        Authorization: `Bearer ${this.techUser.token}`
+      } : undefined;
+      const tplResponse = await fetch(url, { headers });
+      if (!tplResponse.ok) {
+        throw new Error('Could not retrieve CSS file from provided URL');
+      } else {
+        return await tplResponse.text();
       }
     }
-    await this.reply(id, response);
+    return undefined;
+  }
+
+  private async onRenderRequest(
+    request: RenderRequestList,
+    ...args: any
+  ): Promise<void> {
+    const response: RenderResponseList = {
+      id: request.id,
+      operation_status: {
+        code: 200,
+        message: 'SUCCESS',
+      }
+    };
+
+    try {
+      this.logger?.info('Rendering request received');
+      if (!request?.items?.length) {
+        throw {
+          code: 400,
+          message: 'Empty request!'
+        };
+      }
+
+      response.items = await Promise.all(request.items.map(async (item): Promise<RenderResponse> => {
+        try {
+          const result: RenderResponse = {
+            status: {
+              id: item.id,
+              code: 200,
+              message: 'OK',
+            }
+          };
+          const data = unmarshallProtobufAny(item?.data);
+          // options are the handlebar-helperized options that can be
+          // specified in the payload
+          const options = item?.options?.value ? unmarshallProtobufAny(item.options) : {};
+          const renderingStrategy = item.strategy ?? RenderRequest_Strategy.INLINE;
+          if (!item.templates.length) {
+            throw {
+              // id: item.id,
+              code: 400,
+              message: 'Missing templates',
+            };
+          }
+
+          if (!data || Object.keys(data).length === 0) {
+            throw {
+              // id: item.id,
+              code: 400,
+              message: 'Missing data',
+            };
+          }
+
+          // Modify to handle style for each template -> style
+          // Ignore fetch fail on style???
+          const style = await this.fetchStyle(item?.style_url).catch(
+            ({ message }: any) => {
+              result.status.code = 500;
+              result.status.message = message;
+              return null;
+            }
+          );
+          const bodies: RenderResult_Bodies[] = await Promise.all(item.templates.map(async template => {
+            const body = template.body?.toString(template.charset as BufferEncoding);
+            const layout = (template as any).layout?.toString(template.charset as BufferEncoding); // may be null
+            const renderer = renderingStrategy === RenderRequest_Strategy.INLINE
+              ? new Renderer(body, layout, style, options, customHelpersList)
+              : new Renderer(body, layout, null, options, customHelpersList);
+            let rendered = await renderer.render(data); // rendered HTML string
+            if (renderingStrategy === RenderRequest_Strategy.COPY && style) {
+              const html = load(rendered);
+              html('html').append('<style></style>');
+              html('style').attr('type', 'text/css');
+              html('style').append(style);
+              rendered = html.html();
+            }
+
+            return {
+              id: template.id,
+              body: Buffer.from(rendered),
+              charset: 'utf8',
+            };
+          }));
+
+          result.payload = {
+            id: item.id,
+            bodies,
+          };
+          return result;
+        }
+        catch ({ code, message, stack }: any) {
+          this.logger?.error(
+            `Error while rendering template: ${item.id}`,
+            { code, message, stack }
+          );
+          return {
+            status: {
+              id: item.id,
+              code: Number.isInteger(code) ? code : 500,
+              message: message ?? 'Unknown Error!',
+            }
+          };
+        }
+      }));
+
+      if (response.items.some(item => item.status?.code !== 200)) {
+        response.operation_status = {
+          code: 207,
+          message: 'Patrial execution including errors!'
+        };
+      }
+      
+      await this.topics.rendering.emit(
+        'renderResponse',
+        response
+      ).catch(
+        ({ code, message, stack }: any) => this.logger?.error(
+          `Fatal error while emitting render response: ${request.id}`,
+          { code, message, stack }
+        )
+      );
+    }
+    catch ({ code, message, stack }: any) {
+      this.logger?.error(
+        `Error on render request: ${request.id}`,
+        { code, message, stack }
+      );
+
+      response.operation_status = {
+        code: Number.isInteger(code) ? code : 500,
+        message: message ?? 'Unknown Error!',
+      }
+
+      await this.topics.rendering.emit(
+        'renderResponse',
+        response,
+      ).catch(
+        ({ code, message, stack }: any) => this.logger?.error(
+          `Fatal error while emitting render response: ${request.id}`,
+          { code, message, stack }
+        )
+      );
+    }
   }
 
   private async onCommand(
     msg: any,
     context: any,
-    config: any,
-    eventName: string
+    ...args: any
   ): Promise<any> {
     await this.commandService.command(msg, context);
   }
@@ -203,9 +255,9 @@ export class Service {
     const redisConfig = this.cfg.get('redis');
     redisConfig.database = this.cfg.get('redis:db-indexes:db-subject');
     const redisClient: RedisClientType<any, any> = createClient(redisConfig);
-    redisClient.on('error', (err) => this.logger.error('Redis client error in subject store', err));
+    redisClient.on('error', (err) => this.logger?.error('Redis client error in subject store', err));
     await redisClient.connect();
-    this.commandService = new CommandInterface(this.server, this.cfg, this.logger, this.events, redisClient);
+    this.commandService = new CommandInterface(this.server, this.cfg, this.logger, this.events as any, redisClient);
     const serviceNamesCfg = this.cfg.get('serviceNames');
     await this.server.bind(serviceNamesCfg.cis, {
       service: CommandInterfaceServiceDefinition,
@@ -228,31 +280,7 @@ export class Service {
     } as BindConfig<HealthDefinition>);
 
     await this.server.start();
-    this.logger.info('Service started successfully');
-  }
-
-  public marshallProtobufAny(msg: any): any {
-    return {
-      type_url: 'rendering',
-      value: Buffer.from(JSON.stringify(msg)),
-    };
-  }
-
-  public unmarshallProtobufAny(msg: any): any {
-    try {
-      return JSON.parse(msg.value.toString());
-    } catch (err: any) {
-      this.logger.error(
-        'Error unmarshalling one of payload template, data or options',
-        { code: err.code, message: err.message, stack: err.stack }
-      );
-    }
-  }
-
-  private setAuthenticationHeaders(token: string) {
-    return {
-      Authorization: `Bearer ${token}`
-    };
+    this.logger?.info('Service started successfully');
   }
 
   /**
@@ -260,17 +288,17 @@ export class Service {
    * upon receiving the request renders the response
    */
   async subscribeTopics(): Promise<any> {
-    this.logger.info('Subscribing Kafka topics');
+    this.logger?.info('Subscribing Kafka topics');
     await this.events.start();
-    this.offsetStore = new OffsetStore(this.events, this.cfg, this.logger);
+    this.offsetStore = new OffsetStore(this.events as any, this.cfg, this.logger);
 
     const kafkaCfg = this.cfg.get('events:kafka');
-    const topicTypes = _.keys(kafkaCfg.topics);
+    const topicTypes = Object.keys(kafkaCfg.topics);
     for (const topicType of topicTypes) {
       const topicName = kafkaCfg.topics[topicType].topic;
       this.topics[topicType] = await this.events.topic(topicName);
       const offsetValue = await this.offsetStore.getOffset(topicName);
-      this.logger.info('subscribing to topic with offset value',
+      this.logger?.info('subscribing to topic with offset value',
         topicName, offsetValue);
       if (kafkaCfg.topics[topicType].events) {
         const eventNames = kafkaCfg.topics[topicType].events;
@@ -285,41 +313,9 @@ export class Service {
     }
   }
 
-  async reply(requestID: string, responses: Array<any>): Promise<any> {
-    const message = {
-      id: requestID,
-      responses
-    } as RenderResponse;
-    await this.topics.rendering.emit('renderResponse', message);
-  }
-
   async stop(): Promise<any> {
     await this.server.stop();
     await this.events.stop();
     await this.offsetStore.stop();
-  }
-}
-
-
-export class Worker {
-  public service: Service;
-  constructor() { }
-  /**
-   * starting/stopping the actual server
-   */
-  async start(cfg?: any, logger?: Logger): Promise<any> {
-    if (!cfg) {
-      cfg = createServiceConfig(process.cwd());
-      const loggerCfg = cfg.get('logger');
-      logger = createLogger(loggerCfg);
-    }
-
-    this.service = new Service(cfg, logger);
-    await this.service.start();
-    return this.service;
-  }
-
-  async stop(): Promise<any> {
-    await this.service.stop();
   }
 }

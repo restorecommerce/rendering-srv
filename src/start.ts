@@ -1,4 +1,4 @@
-import { Service } from './service.js';
+import { Worker } from './worker.js';
 import { createServiceConfig } from '@restorecommerce/service-config';
 import { createLogger } from '@restorecommerce/logger';
 
@@ -8,7 +8,7 @@ const loggerCfg = cfg.get('logger');
 const logger = createLogger(loggerCfg);
 
 // start service
-const service = new Service(cfg, logger);
+const service = new Worker(cfg, logger);
 service.start().then().catch((err) => {
   logger.error('startup error', err);
   process.exit(1);
