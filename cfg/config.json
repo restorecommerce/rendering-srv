@@ -18,13 +18,16 @@
     "fieldOptions": {
       "bufferFields": [
         {
-          "fieldPath": "items.[0].data"
+          "fieldPath": "items.[0].data",
+          "enableLogging": true
         },
         {
-          "fieldPath": "decodedMsg.items.[0].data"
+          "fieldPath": "decodedMsg.items.[0].data",
+          "enableLogging": true
         },
         {
-          "fieldPath": "messages.[0].items.[0].data"
+          "fieldPath": "messages.[0].items.[0].data",
+          "enableLogging": true
         }
       ],
       "omitFields": [
