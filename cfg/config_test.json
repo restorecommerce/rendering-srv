@@ -9,7 +9,7 @@
     }
   },
   "templates": {
-    "prefix": "http://localhost:8080/",
+    "prefix": "http://localhost:8088/",
     "root": "test/fixtures/",
     "simple_message": {
       "body": "test_message.hbs"
