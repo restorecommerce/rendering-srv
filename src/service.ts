@@ -47,14 +47,14 @@ const { load } = pkg;
 const CURR_DIR = process.cwd();
 const REL_PATH_HANDLEBARS = '/handlebars/';
 const HANDLEBARS_DIR = './handlebars';
-const customHelpersList: string[] = [];
 
 export class RenderingService {
   protected readonly listeners = new Map<string, Handler>();
   protected commandService: CommandInterface;
   protected offsetStore: OffsetStore;
   protected readonly techUser: Subject;
-  
+  public customHelpersList: string[] = [];
+
   constructor(
     protected readonly cfg: ServiceConfig,
     protected readonly logger: Logger,
@@ -70,6 +70,8 @@ export class RenderingService {
 
   private async fetchStyle(url: string): Promise<string> {
     if (url) {
+      this.logger.debug('Fetching style', {url});
+
       // if there is a tech user configured, pass the token
       // in the headers when requesting the css file
       // else try to do a request with empty headers
@@ -140,9 +142,9 @@ export class RenderingService {
           // Modify to handle style for each template -> style
           // Ignore fetch fail on style???
           const style = await this.fetchStyle(item?.style_url).catch(
-            ({ message }: any) => {
+            (err: any): null => {
               result.status.code = 500;
-              result.status.message = message;
+              result.status.message = err.message;
               return null;
             }
           );
@@ -150,8 +152,8 @@ export class RenderingService {
             const body = template.body?.toString(template.charset as BufferEncoding);
             const layout = (template as any).layout?.toString(template.charset as BufferEncoding); // may be null
             const renderer = renderingStrategy === RenderRequest_Strategy.INLINE
-              ? new Renderer(body, layout, style, options, customHelpersList)
-              : new Renderer(body, layout, null, options, customHelpersList);
+              ? new Renderer(body, layout, style, options, this.customHelpersList)
+              : new Renderer(body, layout, null, options, this.customHelpersList);
             let rendered = await renderer.render(data); // rendered HTML string
             if (renderingStrategy === RenderRequest_Strategy.COPY && style) {
               const html = load(rendered);
@@ -174,16 +176,16 @@ export class RenderingService {
           };
           return result;
         }
-        catch ({ code, message, stack }: any) {
+        catch (err: any) {
           this.logger?.error(
             `Error while rendering template: ${item.id}`,
-            { code, message, stack }
+            { code: err.code, message: err.message, stack: err.stack }
           );
           return {
             status: {
               id: item.id,
-              code: Number.isInteger(code) ? code : 500,
-              message: message ?? 'Unknown Error!',
+              code: Number.isInteger(err.code) ? err.code : 500,
+              message: err.message ?? 'Unknown Error!',
             }
           };
         }
@@ -192,38 +194,38 @@ export class RenderingService {
       if (response.items.some(item => item.status?.code !== 200)) {
         response.operation_status = {
           code: 207,
-          message: 'Patrial execution including errors!'
+          message: 'Partial execution including errors!'
         };
       }
-      
+
       await this.topics.rendering.emit(
         'renderResponse',
         response
       ).catch(
-        ({ code, message, stack }: any) => this.logger?.error(
+        (err: any) => this.logger?.error(
           `Fatal error while emitting render response: ${request.id}`,
-          { code, message, stack }
+          { code: err.code, message: err.message, stack: err.stack }
         )
       );
     }
-    catch ({ code, message, stack }: any) {
+    catch (err: any) {
       this.logger?.error(
         `Error on render request: ${request.id}`,
-        { code, message, stack }
+        { code: err.code, message: err.message, stack: err.stack }
       );
 
       response.operation_status = {
-        code: Number.isInteger(code) ? code : 500,
-        message: message ?? 'Unknown Error!',
+        code: Number.isInteger(err.code) ? err.code : 500,
+        message: err.message ?? 'Unknown Error!',
       }
 
       await this.topics.rendering.emit(
         'renderResponse',
         response,
       ).catch(
-        ({ code, message, stack }: any) => this.logger?.error(
+        (err: any) => this.logger?.error(
           `Fatal error while emitting render response: ${request.id}`,
-          { code, message, stack }
+          { code: err.code, message: err.message, stack: err.stack }
         )
       );
     }
@@ -246,7 +248,7 @@ export class RenderingService {
     for (const file of fs.readdirSync(HANDLEBARS_DIR)) {
       if (file.endsWith('.cjs')) {
         absolutePath = CURR_DIR + REL_PATH_HANDLEBARS + file;
-        customHelpersList.push(absolutePath);
+        this.customHelpersList.push(absolutePath);
       }
     }
 

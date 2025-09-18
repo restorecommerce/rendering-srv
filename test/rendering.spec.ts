@@ -1,4 +1,3 @@
-import {} from 'mocha';
 import should from 'should';
 import fs from 'node:fs';
 import { createServer } from 'http';
@@ -10,10 +9,10 @@ import { Events, Topic } from '@restorecommerce/kafka-client';
 import { Worker } from '../src/worker.js';
 import {
   marshallProtobufAny as marshall,
-  unmarshallProtobufAny as unmarshall,
 } from '../src/utils.js';
 import { RenderRequestList, RenderResponseList } from '@restorecommerce/rc-grpc-clients/dist/generated-server/io/restorecommerce/rendering.js';
 import { ResourceAwaitQueue } from './ResourceAwaitQueue.js';
+import {it, describe, beforeAll, afterAll} from 'vitest';
 
 const HTML_CONTENT_TYPE = 'application/html';
 const TEXT_CONTENT_TYPE = 'application/text';
@@ -42,20 +41,25 @@ describe('Testing Rendering-srv', () => {
   let cfg: any;
   let logger: any;
   let topic: Topic;
+  let httpServer: any;
 
-  before(async function start(): Promise<void> {
+  beforeAll(async function start(): Promise<void> {
     cfg = createServiceConfig(process.cwd());
     logger = createLogger(cfg.get('logger'));
     worker = new Worker(cfg, logger);
     await worker.start();
+
+    httpServer = createServer(staticServe);
+    httpServer.listen(cfg.get('static_server:port'));
   });
 
-  after(async function stop(): Promise<void> {
+  afterAll(async function stop(): Promise<void> {
     await worker.stop();
+    await new Promise(r => httpServer.close(r));
   });
 
   describe('with test response listener', () => {
-    before(async function start(): Promise<void> {
+    beforeAll(async function start(): Promise<void> {
       events = new Events({
         ...cfg.get('events:kafka'),
         groupId: 'rendering-srv-test-runner',
@@ -65,10 +69,10 @@ describe('Testing Rendering-srv', () => {
       }, logger)
       await events.start();
       topic = await events.topic('io.restorecommerce.rendering');
-      topic.on('renderResponse', listener);
+      await topic.on('renderResponse', listener);
     });
 
-    after(async function stop(): Promise<void> {
+    afterAll(async function stop(): Promise<void> {
       await events.stop();
     });
 
@@ -112,7 +116,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(msgTpl.toString()).render(data);
+      const rendered = await new Renderer(msgTpl.toString(), undefined, undefined, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -174,7 +178,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(msgTpl.toString()).render(data);
+      const rendered = await new Renderer(msgTpl.toString(), undefined, undefined, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -207,7 +211,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(msgTpl.toString()).render(data);
+      const rendered = await new Renderer(msgTpl.toString(), undefined, undefined, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -241,7 +245,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
       
-      const rendered = await new Renderer(body.toString(), layout.toString()).render(data);
+      const rendered = await new Renderer(body.toString(), layout.toString(), undefined, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -260,8 +264,6 @@ describe('Testing Rendering-srv', () => {
     it('should render with external stylesheet', async () => {
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
       // setting static server to serve templates over HTTP
-      const httpServer = createServer(staticServe);
-      httpServer.listen(cfg.get('static_server:port'));
 
       const root = cfg.get('templates:root');
       const templates = cfg.get('templates:message_with_style');
@@ -283,7 +285,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
       
-      const rendered = await new Renderer(body.toString(), layout.toString(), style).render(data);
+      const rendered = await new Renderer(body.toString(), layout.toString(), style, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -297,8 +299,6 @@ describe('Testing Rendering-srv', () => {
         rendered,
         'renderResponse bodies should equal test rendering'
       );
-
-      httpServer.close();
     });
 
     it('should render without css for missing stylesheet', async () => {
@@ -322,7 +322,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(body.toString(), layout.toString(), style).render(data);
+      const rendered = await new Renderer(body.toString(), layout.toString(), style, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
       const renderResult = renderResponse.items?.[0]?.payload?.bodies?.[0]?.body?.toString();
@@ -380,7 +380,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(body.toString(), layout.toString()).render(data);
+      const rendered = await new Renderer(body.toString(), layout.toString(), undefined, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -409,8 +409,6 @@ describe('Testing Rendering-srv', () => {
     it('Should render CSS inline on complex template', async () => {
       const prefix = `${cfg.get('static_server:prefix')}:${cfg.get('static_server:port')}/`;
       // setting static server to serve templates over HTTP
-      const httpServer = createServer(staticServe);
-      httpServer.listen(cfg.get('static_server:port'));
       const root = cfg.get('templates:root');
       const templates = cfg.get('templates:message_with_inline_css');
       const body = fs.readFileSync(root + templates.body);
@@ -473,7 +471,7 @@ describe('Testing Rendering-srv', () => {
         }],
       };
 
-      const rendered = await new Renderer(body.toString(), layout.toString(), style).render(data);
+      const rendered = await new Renderer(body.toString(), layout.toString(), style, undefined, worker.service.customHelpersList).render(data);
       await topic.emit('renderRequest', renderRequest);
       const renderResponse = await renderResultAwaitingQueue.await(renderRequest.id!, 5000);
 
@@ -487,8 +485,6 @@ describe('Testing Rendering-srv', () => {
         rendered,
         'renderResponse bodies should equal test rendering'
       );
-
-      httpServer.close();
     });
   });
 });
