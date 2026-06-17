@@ -55,6 +55,7 @@
     "build:es": "node esbuild.mjs",
     "build:clean": "rimraf lib",
     "build": "npm-run-all lint build:clean build:es",
+    "postbuild": "mkdir -p dist && cp node_modules/@platformatic/wasm-utils/dist/native.wasm dist/",
     "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
   },
   "engines": {

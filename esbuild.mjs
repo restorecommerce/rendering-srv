@@ -9,6 +9,5 @@ await esbuild.build({
   minify: true,
   treeShaking: true,
   sourcemap: 'linked',
-  external: ['@platformatic/wasm-utils'],
   plugins: [commonifierPlugin],
 });
